@@ -1,0 +1,26 @@
+# ============================================================
+# Quebra de linha normalizada.
+#
+# Sem isto, o Git no Windows grava CRLF no checkout e o primeiro
+# commit feito em outra maquina aparece como "arquivo inteiro
+# alterado". Guardar sempre LF no repositorio mantem o diff limpo.
+# ============================================================
+
+* text=auto eol=lf
+
+# Binarios: nunca converter.
+*.png  binary
+*.jpg  binary
+*.jpeg binary
+*.gif  binary
+*.webp binary
+*.ico  binary
+*.pdf  binary
+*.woff binary
+*.woff2 binary
+
+# Scripts de shell precisam de LF mesmo no Windows.
+*.sh text eol=lf
+
+# O PowerShell aceita LF, mas CRLF e o padrao da plataforma.
+*.ps1 text eol=crlf

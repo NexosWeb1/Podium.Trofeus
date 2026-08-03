@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>Painel do Catálogo | Podium Premiações</title>
+    <link rel="icon" href="assets/favicon/favicon.ico" sizes="any" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700;800&family=Inter:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+
+    <link rel="stylesheet" href="css/reset.css" />
+    <link rel="stylesheet" href="css/tokens.css" />
+    <link rel="stylesheet" href="css/base.css" />
+    <link rel="stylesheet" href="css/components.css" />
+    <link rel="stylesheet" href="css/admin.css" />
+
+    <script type="module" src="js/admin.js"></script>
+  </head>
+  <body class="admin">
+    <!-- ===== Tela de login ===== -->
+    <div class="admin-login" id="admin-login">
+      <form class="admin-login__card" id="login-form">
+        <img
+          src="assets/img/logo/podium-monograma-black.png"
+          alt="Podium Premiações"
+          width="192"
+          height="192"
+        />
+        <h1>Painel do Catálogo</h1>
+        <p class="admin-login__mode" id="login-mode"></p>
+        <div class="field">
+          <label class="field__label" for="login-email">E-mail</label>
+          <input id="login-email" name="email" type="email" autocomplete="username" />
+        </div>
+        <div class="field">
+          <label class="field__label" for="login-pass">Senha</label>
+          <input
+            id="login-pass"
+            name="password"
+            type="password"
+            autocomplete="current-password"
+            required
+          />
+        </div>
+        <p class="admin-login__error" id="login-error" role="alert" hidden></p>
+        <button class="btn btn--gold btn--lg" type="submit" id="login-btn">Entrar</button>
+      </form>
+    </div>
+
+    <!-- ===== Painel ===== -->
+    <div class="admin-app" id="admin-app" hidden>
+      <header class="admin-header">
+        <div class="admin-header__brand">
+          <img src="assets/img/logo/podium-monograma-black.png" alt="" width="192" height="192" />
+          <div>
+            <strong>Painel do Catálogo</strong>
+            <span class="admin-badge" id="admin-mode"></span>
+          </div>
+        </div>
+        <div class="admin-header__actions">
+          <a class="btn btn--outline" href="index.html" target="_blank" rel="noopener">Ver site</a>
+          <button class="btn btn--ghost" id="logout-btn" type="button">Sair</button>
+        </div>
+      </header>
+
+      <main class="admin-main">
+        <div class="admin-toolbar">
+          <div>
+            <h2>Troféus</h2>
+            <p class="admin-count" id="admin-count"></p>
+          </div>
+          <div class="admin-toolbar__actions">
+            <select class="admin-filter" id="admin-filter" aria-label="Filtrar por modalidade">
+              <option value="todos">Todas as modalidades</option>
+            </select>
+            <button class="btn btn--gold" id="add-btn" type="button">
+              <svg
+                viewBox="0 0 24 24"
+                width="18"
+                height="18"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <path d="M12 5v14M5 12h14" stroke-linecap="round" />
+              </svg>
+              Adicionar troféu
+            </button>
+          </div>
+        </div>
+
+        <div class="admin-grid" id="admin-grid" aria-live="polite"></div>
+        <p class="admin-empty" id="admin-empty" hidden>Nenhum troféu nesta modalidade.</p>
+      </main>
+    </div>
+
+    <!-- ===== Modal de adicionar/editar ===== -->
+    <div class="admin-modal" id="product-form-modal" aria-hidden="true">
+      <div class="admin-modal__backdrop" data-close></div>
+      <form
+        class="admin-modal__card"
+        id="product-form"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="pf-title"
+      >
+        <button class="admin-modal__close" type="button" aria-label="Fechar" data-close>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M6 6l12 12M18 6L6 18" stroke-linecap="round" />
+          </svg>
+        </button>
+        <h2 id="pf-title">Adicionar troféu</h2>
+
+        <input type="hidden" name="id" id="pf-id" />
+
+        <div class="field">
+          <label class="field__label" for="pf-image">Foto do troféu</label>
+          <div class="admin-upload">
+            <div class="admin-upload__preview" id="pf-preview">
+              <span>Sem imagem</span>
+            </div>
+            <div class="admin-upload__actions">
+              <input type="file" id="pf-image" accept="image/*" hidden />
+              <button type="button" class="btn btn--outline" id="pf-image-btn">
+                Anexar imagem
+              </button>
+              <button type="button" class="btn btn--ghost" id="pf-image-clear" hidden>
+                Remover
+              </button>
+              <p class="admin-hint">
+                JPG, PNG ou WebP, de preferência com fundo branco. É redimensionada
+                automaticamente.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div class="field">
+          <label class="field__label" for="pf-name">
+            Nome do troféu <span class="field__req">*</span>
+          </label>
+          <input id="pf-name" name="name" type="text" required />
+        </div>
+
+        <div class="field">
+          <label class="field__label" for="pf-category">
+            Modalidade <span class="field__req">*</span>
+          </label>
+          <select id="pf-category" name="category" required></select>
+        </div>
+
+        <div class="field">
+          <label class="field__label" for="pf-price">Preço</label>
+          <input
+            id="pf-price"
+            name="price"
+            type="text"
+            inputmode="decimal"
+            autocomplete="off"
+            placeholder="Ex.: 189,90"
+          />
+          <p class="admin-hint">
+            Deixe em branco para o site mostrar "Sob consulta". Aceita 189,90 ou 1.234,56.
+          </p>
+        </div>
+
+        <div class="field">
+          <label class="field__label" for="pf-description">Descrição</label>
+          <textarea id="pf-description" name="description" rows="4"></textarea>
+        </div>
+
+        <div class="field">
+          <span class="field__label">Acabamentos disponíveis</span>
+          <div class="color-selected" id="pf-colors-selected" aria-live="polite"></div>
+          <p class="admin-hint">Clique nas cores da paleta para adicionar ou remover:</p>
+          <div
+            class="color-palette"
+            id="pf-colors-palette"
+            role="group"
+            aria-label="Paleta de acabamentos"
+          ></div>
+          <div class="color-custom">
+            <input
+              type="color"
+              id="pf-color-val"
+              value="#c9cbcc"
+              aria-label="Escolher cor personalizada"
+            />
+            <input type="text" id="pf-color-name" placeholder="Nome do acabamento" />
+            <button type="button" class="btn btn--outline" id="pf-color-add">Adicionar</button>
+          </div>
+        </div>
+
+        <label class="admin-check">
+          <input type="checkbox" id="pf-featured" name="featured" />
+          <span>Marcar como destaque</span>
+        </label>
+
+        <p class="admin-modal__error" id="pf-error" role="alert" hidden></p>
+
+        <div class="admin-modal__foot">
+          <button type="button" class="btn btn--outline" data-close>Cancelar</button>
+          <button type="submit" class="btn btn--gold" id="pf-save">Salvar troféu</button>
+        </div>
+      </form>
+    </div>
+
+    <!-- ===== Confirmação de exclusão ===== -->
+    <div class="admin-modal admin-modal--sm" id="delete-modal" aria-hidden="true">
+      <div class="admin-modal__backdrop" data-close-del></div>
+      <div
+        class="admin-modal__card"
+        role="alertdialog"
+        aria-modal="true"
+        aria-labelledby="del-title"
+      >
+        <h2 id="del-title">Excluir troféu</h2>
+        <p id="del-text">
+          Tem certeza que deseja excluir este troféu? Esta ação não pode ser desfeita.
+        </p>
+        <div class="admin-modal__foot">
+          <button type="button" class="btn btn--outline" data-close-del>Cancelar</button>
+          <button type="button" class="btn btn--danger" id="del-confirm">Excluir</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="admin-toast" id="admin-toast" role="status" aria-live="polite" hidden></div>
+  </body>
+</html>

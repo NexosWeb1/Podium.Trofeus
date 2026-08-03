@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Podium Premiações | Troféus Personalizados para Eventos Esportivos</title>
+    <meta
+      name="description"
+      content="Troféus personalizados para eventos esportivos e corporativos. Projeto exclusivo para cada evento, alto padrão de acabamento e produção própria. Solicite seu orçamento."
+    />
+    <meta name="theme-color" content="#070809" />
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="pt_BR" />
+    <meta
+      property="og:title"
+      content="Podium Premiações | Troféus Personalizados para Eventos Esportivos"
+    />
+    <meta
+      property="og:description"
+      content="Troféus que eternizam a conquista. Projeto exclusivo, acabamento premium e produção própria para eventos de todos os portes."
+    />
+    <meta property="og:image" content="assets/img/og/podium-og.jpg" />
+    <meta name="twitter:card" content="summary_large_image" />
+
+    <!-- Favicon -->
+    <link rel="icon" href="assets/favicon/favicon.ico" sizes="any" />
+    <link rel="icon" type="image/png" sizes="192x192" href="assets/favicon/icon-192.png" />
+    <link rel="apple-touch-icon" href="assets/favicon/apple-touch-icon.png" />
+
+    <!-- Fontes -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700;800&family=Inter:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- CSS (a ordem importa) -->
+    <link rel="stylesheet" href="css/reset.css" />
+    <link rel="stylesheet" href="css/tokens.css" />
+    <link rel="stylesheet" href="css/base.css" />
+    <link rel="stylesheet" href="css/layout.css" />
+    <link rel="stylesheet" href="css/components.css" />
+    <link rel="stylesheet" href="css/sections.css" />
+    <link rel="stylesheet" href="css/animations.css" />
+
+    <!-- Libs externas (versão fixada) -->
+    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/lenis@1.1.13/dist/lenis.min.js"></script>
+
+    <!-- App -->
+    <script type="module" src="js/main.js"></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#catalogo">Pular para o conteúdo</a>
+
+    <!-- ================= HEADER / NAV ================= -->
+    <header class="site-header" id="site-header">
+      <div class="container">
+        <nav class="nav" aria-label="Navegação principal">
+          <a class="nav__logo" href="#hero" aria-label="Podium Premiações, ir para o início">
+            <img
+              src="assets/img/logo/podium-horizontal-white.png"
+              srcset="
+                assets/img/logo/podium-horizontal-white.png    1x,
+                assets/img/logo/podium-horizontal-white@2x.png 2x
+              "
+              alt=""
+              width="600"
+              height="160"
+            />
+          </a>
+
+          <div class="nav__menu" id="nav-menu">
+            <ul class="nav__links">
+              <li><a class="nav__link" href="#sobre">Sobre</a></li>
+              <li><a class="nav__link" href="#catalogo">Catálogo</a></li>
+              <li><a class="nav__link" href="#como-funciona">Como funciona</a></li>
+              <li><a class="nav__link" href="#orcamento">Orçamento</a></li>
+            </ul>
+            <a class="btn btn--gold" href="#orcamento">Solicitar Orçamento</a>
+          </div>
+
+          <div class="nav__actions">
+            <a class="btn btn--gold" href="#orcamento">Solicitar Orçamento</a>
+            <button
+              class="nav__toggle"
+              id="nav-toggle"
+              type="button"
+              aria-label="Abrir menu"
+              aria-expanded="false"
+              aria-controls="nav-menu"
+            >
+              <span></span><span></span><span></span>
+            </button>
+          </div>
+        </nav>
+      </div>
+    </header>
+
+    <main id="main">
+      <!-- ================= 1. HERO ================= -->
+      <section class="hero" id="hero">
+        <div class="hero__bg" aria-hidden="true">
+          <div class="hero__grid-lines"></div>
+          <span class="hero__orb hero__orb--1"></span>
+          <span class="hero__orb hero__orb--2"></span>
+          <span class="hero__orb hero__orb--3"></span>
+        </div>
+        <div class="hero__glow" aria-hidden="true"></div>
+
+        <div class="container">
+          <div class="hero__grid">
+            <div class="hero__content">
+              <span class="eyebrow" data-reveal="fade">Troféus e premiações esportivas</span>
+              <h1 data-reveal>
+                Troféus que eternizam a
+                <span class="text-metal text-metal--anim">conquista</span>
+              </h1>
+              <p class="hero__subtitle" data-reveal>
+                Desenvolvemos troféus personalizados para eventos esportivos e corporativos. Projeto
+                exclusivo para cada competição, alto padrão de acabamento e produção própria.
+              </p>
+              <div class="hero__cta" data-reveal>
+                <a class="btn btn--gold btn--lg" href="#orcamento">Solicitar Orçamento</a>
+                <a class="btn btn--outline btn--lg" href="#catalogo">Ver Catálogo</a>
+              </div>
+
+              <div class="hero__trust" data-reveal-group>
+                <div class="hero__trust-item" data-reveal-item>
+                  <span class="hero__trust-num">5</span>
+                  <span class="hero__trust-label">modalidades</span>
+                </div>
+                <div class="hero__trust-item" data-reveal-item>
+                  <span class="hero__trust-num">Exclusivo</span>
+                  <span class="hero__trust-label">projeto por evento</span>
+                </div>
+                <div class="hero__trust-item" data-reveal-item>
+                  <span class="hero__trust-num">Própria</span>
+                  <span class="hero__trust-label">produção</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="hero__visual" data-reveal="scale">
+              <div class="hero__stage">
+                <img
+                  src="assets/img/hero/trofeus-hero.jpg"
+                  alt="Diferentes modelos de troféus personalizados da Podium Premiações"
+                  width="1200"
+                  height="900"
+                  fetchpriority="high"
+                />
+                <div class="hero__badge" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path
+                      d="M12 2l2.4 4.9 5.4.8-3.9 3.8.9 5.4-4.8-2.5-4.8 2.5.9-5.4L4.2 7.7l5.4-.8L12 2z"
+                      stroke-linejoin="round"
+                    />
+                  </svg>
+                  <span>Acabamento<br />premium</span>
+                </div>
+              </div>
+              <img
+                class="hero__reflection"
+                src="assets/img/hero/trofeus-hero.jpg"
+                alt=""
+                aria-hidden="true"
+                width="1200"
+                height="900"
+              />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= MARQUEE ================= -->
+      <div class="marquee" aria-hidden="true">
+        <div class="marquee__track" id="marquee-track">
+          <!-- preenchido por JS (duplicado para o loop contínuo) -->
+        </div>
+      </div>
+
+      <!-- ================= 2. QUEM É A PODIUM ================= -->
+      <section class="section about" id="sobre" aria-labelledby="sobre-title">
+        <div class="container">
+          <div class="about__grid">
+            <div class="about__media" data-reveal="left">
+              <img
+                src="assets/img/about/producao-podium.jpg"
+                alt="Produção de troféus personalizados da Podium Premiações"
+                width="1200"
+                height="1200"
+                loading="lazy"
+              />
+            </div>
+            <div class="about__content">
+              <span class="eyebrow" data-reveal="fade">Quem é a Podium</span>
+              <h2 id="sobre-title" data-reveal>
+                Cada evento merece uma premiação feita sob medida
+              </h2>
+              <p data-reveal>
+                A Podium Premiações desenvolve troféus personalizados para eventos esportivos e
+                corporativos. Do primeiro esboço à entrega, o projeto é criado do zero para a sua
+                competição, com produção própria e controle de qualidade em cada peça.
+              </p>
+
+              <div class="about__features" data-reveal-group>
+                <div class="feature" data-reveal-item>
+                  <span class="feature__icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M12 19l7-7a3 3 0 00-4-4l-7 7-1 5 5-1z" stroke-linejoin="round" />
+                    </svg>
+                  </span>
+                  <h3>Projetos exclusivos</h3>
+                  <p>Um layout criado para cada evento, com a sua identidade visual.</p>
+                </div>
+                <div class="feature" data-reveal-item>
+                  <span class="feature__icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path
+                        d="M12 2l7 4v6c0 4.4-3 8-7 10-4-2-7-5.6-7-10V6l7-4z"
+                        stroke-linejoin="round"
+                      />
+                      <path d="M9 12l2 2 4-4" stroke-linecap="round" stroke-linejoin="round" />
+                    </svg>
+                  </span>
+                  <h3>Alto padrão de acabamento</h3>
+                  <p>Materiais selecionados e gravação precisa em todas as peças.</p>
+                </div>
+                <div class="feature" data-reveal-item>
+                  <span class="feature__icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M13 2L4 14h7l-1 8 9-12h-7l1-8z" stroke-linejoin="round" />
+                    </svg>
+                  </span>
+                  <h3>Produção própria</h3>
+                  <p>Controle total do processo, do desenho ao prazo de entrega.</p>
+                </div>
+                <div class="feature" data-reveal-item>
+                  <span class="feature__icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M3 21h18M5 21V8l7-5 7 5v13M9 21v-6h6v6" stroke-linejoin="round" />
+                    </svg>
+                  </span>
+                  <h3>Eventos de todos os portes</h3>
+                  <p>Atendemos de torneios locais a campeonatos de grande porte.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Divisor animado (estrela de campeonato) entre Sobre e Catálogo -->
+      <div class="section-divider" data-reveal="fade" aria-hidden="true">
+        <span class="section-divider__line"></span>
+        <span class="section-divider__star">
+          <svg viewBox="0 0 48 48" focusable="false">
+            <defs>
+              <linearGradient id="chromeGrad" x1="0" y1="0" x2="1" y2="1">
+                <stop class="cg-1" offset="0%" />
+                <stop class="cg-2" offset="34%" />
+                <stop class="cg-3" offset="58%" />
+                <stop class="cg-4" offset="100%" />
+              </linearGradient>
+            </defs>
+            <circle class="section-divider__ring" cx="24" cy="24" r="21" />
+            <path
+              class="section-divider__glyph"
+              d="M24 7.2l5.05 10.23 11.29 1.64-8.17 7.96 1.93 11.24L24 32.99l-10.1 5.31 1.93-11.24-8.17-7.96 11.29-1.64L24 7.2z"
+            />
+          </svg>
+        </span>
+        <span class="section-divider__line"></span>
+      </div>
+
+      <!-- ================= 3. CATÁLOGO DE TROFÉUS ================= -->
+      <section class="section catalog" id="catalogo" aria-labelledby="catalogo-title">
+        <div class="container">
+          <div class="section-head section-head--center" data-reveal>
+            <span class="eyebrow">Catálogo de troféus</span>
+            <h2 id="catalogo-title">Encontre o troféu da sua modalidade</h2>
+            <p>
+              Filtre pela modalidade esportiva e veja os modelos disponíveis. Cada peça é
+              personalizada com o nome, a categoria e a identidade do seu evento.
+            </p>
+          </div>
+        </div>
+
+        <div class="catalog__toolbar">
+          <div class="container">
+            <div
+              class="filter-bar"
+              id="catalog-filters"
+              role="group"
+              aria-label="Filtrar troféus por modalidade esportiva"
+            ></div>
+          </div>
+        </div>
+
+        <div class="container">
+          <div class="catalog__grid" id="catalog-grid" aria-live="polite"></div>
+          <div class="empty-state" id="catalog-empty" hidden>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
+              <circle cx="11" cy="11" r="7" /><path d="M21 21l-4.3-4.3" stroke-linecap="round" />
+            </svg>
+            <p>
+              Ainda não há troféus cadastrados nesta modalidade. Fale com a gente para um projeto sob
+              medida.
+            </p>
+          </div>
+          <nav class="pagination" id="catalog-pager" aria-label="Paginação do catálogo" hidden></nav>
+        </div>
+      </section>
+
+      <!-- Template do card (markup fora do JS) -->
+      <template id="product-card-tpl">
+        <button type="button" class="product-card">
+          <span class="product-card__media">
+            <img src="" alt="" />
+            <span class="product-card__cat"></span>
+          </span>
+          <span class="product-card__body">
+            <span class="product-card__title"></span>
+            <span class="product-card__price"></span>
+            <span class="product-card__more">
+              Ver detalhes
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M5 12h14M13 6l6 6-6 6" stroke-linecap="round" stroke-linejoin="round" />
+              </svg>
+            </span>
+          </span>
+        </button>
+      </template>
+
+      <!-- ================= 4. COMO FUNCIONA ================= -->
+      <section class="section how" id="como-funciona" aria-labelledby="how-title">
+        <div class="container">
+          <div class="section-head section-head--center" data-reveal>
+            <span class="eyebrow">Como funciona</span>
+            <h2 id="how-title">Do orçamento à entrega em 5 etapas</h2>
+          </div>
+
+          <div class="steps">
+            <div class="steps__line" aria-hidden="true"></div>
+            <div class="step" data-reveal="fade">
+              <span class="step__num" aria-hidden="true"></span>
+              <h3>Solicite seu orçamento</h3>
+              <p>Pelo formulário ou direto no WhatsApp.</p>
+            </div>
+            <div class="step" data-reveal="fade">
+              <span class="step__num" aria-hidden="true"></span>
+              <h3>Compartilhe as informações do evento</h3>
+              <p>Modalidade, categorias, quantidade e data.</p>
+            </div>
+            <div class="step" data-reveal="fade">
+              <span class="step__num" aria-hidden="true"></span>
+              <h3>Desenvolvemos um projeto exclusivo</h3>
+              <p>Criamos o modelo do troféu sob medida.</p>
+            </div>
+            <div class="step" data-reveal="fade">
+              <span class="step__num" aria-hidden="true"></span>
+              <h3>Aprovação do layout</h3>
+              <p>Você valida a arte antes de qualquer produção.</p>
+            </div>
+            <div class="step" data-reveal="fade">
+              <span class="step__num" aria-hidden="true"></span>
+              <h3>Produção e entrega</h3>
+              <p>Produzimos e entregamos no prazo combinado.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= 5. FORMULÁRIO DE ORÇAMENTO ================= -->
+      <section class="section quote" id="orcamento" aria-labelledby="quote-title">
+        <div class="container">
+          <div class="quote__grid">
+            <div class="quote__aside" data-reveal="left">
+              <span class="eyebrow">Solicitar orçamento</span>
+              <h2 id="quote-title">Vamos premiar os campeões do seu evento?</h2>
+              <p>
+                Preencha o formulário e envie direto para o nosso WhatsApp. Respondemos rápido com as
+                melhores opções para a sua competição.
+              </p>
+              <div class="quote__points">
+                <div class="quote__point">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M20 6L9 17l-5-5" stroke-linecap="round" stroke-linejoin="round" />
+                  </svg>
+                  <span>Projeto exclusivo para cada evento</span>
+                </div>
+                <div class="quote__point">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M20 6L9 17l-5-5" stroke-linecap="round" stroke-linejoin="round" />
+                  </svg>
+                  <span>Orçamento sem compromisso</span>
+                </div>
+                <div class="quote__point">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M20 6L9 17l-5-5" stroke-linecap="round" stroke-linejoin="round" />
+                  </svg>
+                  <span>Produção para eventos de todos os portes</span>
+                </div>
+              </div>
+            </div>
+
+            <form class="quote__form" id="quote-form" novalidate data-reveal="right">
+              <div class="form-grid">
+                <div class="field">
+                  <label class="field__label" for="f-nome">
+                    Nome <span class="field__req">*</span>
+                  </label>
+                  <input id="f-nome" name="nome" type="text" autocomplete="name" required />
+                </div>
+                <div class="field">
+                  <label class="field__label" for="f-empresa">Empresa ou Organização</label>
+                  <input
+                    id="f-empresa"
+                    name="empresa"
+                    type="text"
+                    autocomplete="organization"
+                  />
+                </div>
+                <div class="field">
+                  <label class="field__label" for="f-whatsapp">
+                    WhatsApp <span class="field__req">*</span>
+                  </label>
+                  <input
+                    id="f-whatsapp"
+                    name="whatsapp"
+                    type="tel"
+                    inputmode="tel"
+                    autocomplete="tel"
+                    placeholder="(00) 00000-0000"
+                    required
+                  />
+                </div>
+                <div class="field">
+                  <label class="field__label" for="f-email">
+                    E-mail <span class="field__req">*</span>
+                  </label>
+                  <input
+                    id="f-email"
+                    name="email"
+                    type="email"
+                    inputmode="email"
+                    autocomplete="email"
+                    placeholder="voce@empresa.com.br"
+                    required
+                  />
+                </div>
+                <div class="field">
+                  <label class="field__label" for="f-modalidade">
+                    Modalidade esportiva <span class="field__req">*</span>
+                  </label>
+                  <select id="f-modalidade" name="modalidade" required></select>
+                </div>
+                <div class="field">
+                  <label class="field__label" for="f-modelo">Modelo do Troféu</label>
+                  <select id="f-modelo" name="modelo" disabled></select>
+                </div>
+                <div class="field">
+                  <label class="field__label" for="f-quantidade">Quantidade</label>
+                  <input
+                    id="f-quantidade"
+                    name="quantidade"
+                    type="number"
+                    inputmode="numeric"
+                    min="1"
+                    step="1"
+                    placeholder="Ex.: 30"
+                  />
+                </div>
+                <div class="field">
+                  <label class="field__label" for="f-data">Data do evento</label>
+                  <input id="f-data" name="data_evento" type="date" />
+                </div>
+                <div class="field field--full">
+                  <label class="field__label" for="f-mensagem">Mensagem</label>
+                  <textarea
+                    id="f-mensagem"
+                    name="mensagem"
+                    placeholder="Conte sobre o evento, as categorias de premiação e ideias de personalização."
+                  ></textarea>
+                </div>
+              </div>
+
+              <button type="submit" class="btn btn--gold btn--lg form-submit">
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor" aria-hidden="true">
+                  <path
+                    d="M12 2a10 10 0 00-8.5 15.3L2 22l4.8-1.5A10 10 0 1012 2zm5.3 13.6c-.2.6-1.3 1.2-1.8 1.2-.5.1-1 .1-1.7-.1-.4-.1-.9-.3-1.6-.6-2.8-1.2-4.6-4-4.7-4.2-.1-.2-1.1-1.5-1.1-2.8s.7-2 .9-2.2c.2-.3.5-.3.7-.3h.5c.2 0 .4 0 .6.5l.8 1.9c.1.2.1.3 0 .5l-.3.5-.3.3c-.2.2-.3.3-.1.6.2.3.9 1.4 1.9 2.3 1.3 1.1 2.3 1.5 2.6 1.6.3.1.5.1.6-.1l.9-1c.2-.2.4-.2.6-.1l1.9.9c.3.1.4.2.5.3z"
+                  />
+                </svg>
+                Enviar pelo WhatsApp
+              </button>
+              <p class="form-note">
+                Ao enviar, abriremos uma conversa no WhatsApp com os dados preenchidos.
+              </p>
+              <p class="form-fallback" id="form-fallback" hidden>
+                Se o WhatsApp não abriu automaticamente,
+                <a id="form-fallback-link" href="#" target="_blank" rel="noopener"
+                  >clique aqui para continuar</a
+                >.
+              </p>
+            </form>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- ================= 6. RODAPÉ ================= -->
+    <footer class="site-footer" id="contato">
+      <div class="container">
+        <div class="footer-grid">
+          <div class="footer-brand">
+            <img
+              class="footer-brand__logo"
+              src="assets/img/logo/podium-horizontal-white.png"
+              srcset="
+                assets/img/logo/podium-horizontal-white.png    1x,
+                assets/img/logo/podium-horizontal-white@2x.png 2x
+              "
+              alt="Podium Premiações"
+              width="600"
+              height="160"
+            />
+            <p>
+              Troféus personalizados para eventos esportivos e corporativos. Projeto exclusivo,
+              acabamento premium e produção própria.
+            </p>
+            <div class="footer-social">
+              <a id="social-instagram" href="#" aria-label="Instagram" target="_blank" rel="noopener">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="3" y="3" width="18" height="18" rx="5" />
+                  <circle cx="12" cy="12" r="4" />
+                  <circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none" />
+                </svg>
+              </a>
+            </div>
+            <a class="link-arrow footer-admin-link" href="admin.html">Painel Administrativo</a>
+          </div>
+
+          <div class="footer-col">
+            <h3>Contato</h3>
+            <ul>
+              <li class="footer-contact-item" id="contact-phone-item">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path
+                    d="M22 16.9v3a2 2 0 01-2.2 2 19.8 19.8 0 01-8.6-3 19.5 19.5 0 01-6-6 19.8 19.8 0 01-3-8.7A2 2 0 014.1 2h3a2 2 0 012 1.7c.1.9.3 1.8.6 2.7a2 2 0 01-.5 2.1L8.1 9.6a16 16 0 006 6l1.1-1.1a2 2 0 012.1-.5c.9.3 1.8.5 2.7.6a2 2 0 011.7 2z"
+                  />
+                </svg>
+                <a id="contact-phone" href="#"></a>
+              </li>
+              <li class="footer-contact-item" id="contact-email-item">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="3" y="5" width="18" height="14" rx="2" />
+                  <path d="M3 7l9 6 9-6" />
+                </svg>
+                <a id="contact-email" href="#"></a>
+              </li>
+              <li class="footer-contact-item" id="contact-address-item">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 1116 0z" />
+                  <circle cx="12" cy="10" r="3" />
+                </svg>
+                <span id="contact-address"></span>
+              </li>
+            </ul>
+            <a class="link-arrow" data-wa href="#" style="margin-top: 1rem">
+              Falar no WhatsApp
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M5 12h14M13 6l6 6-6 6" stroke-linecap="round" stroke-linejoin="round" />
+              </svg>
+            </a>
+          </div>
+
+          <div class="footer-col">
+            <h3>Horário de atendimento</h3>
+            <ul id="footer-hours"></ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        <div class="container footer-bottom__inner">
+          <span>&copy; <span id="year"></span> Podium Premiações. Todos os direitos reservados.</span>
+          <span>Troféus personalizados para eventos esportivos e corporativos</span>
+        </div>
+      </div>
+    </footer>
+
+    <script>
+      document.getElementById('year').textContent = new Date().getFullYear();
+    </script>
+  </body>
+</html>

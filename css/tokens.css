@@ -1,0 +1,265 @@
+/* ============================================================
+   tokens.css: design tokens (fonte única de verdade)
+   Podium Premiações | Troféus e premiações esportivas
+
+   Trocar cores, tema e espaçamento aqui, nunca nos componentes.
+
+   REGRA DE ACESSIBILIDADE (não quebrar):
+   A prata é o acento primário, mas prata clara não passa contraste
+   em fundo claro. Por isso ela é uma rampa de 3 faixas com papéis fixos:
+     --silver       (cromo claro)  -> texto/ícone SÓ em fundo escuro
+     --silver-deep  (aço médio)    -> SÓ não-texto: borda, traço de ícone
+     --silver-ink   (aço escuro)   -> é o papel "prata" em fundo CLARO
+   Cada par texto/fundo abaixo traz a razão de contraste medida (WCAG 2.1).
+   ============================================================ */
+
+:root {
+  /* ---- Grafite frio (base escura) ----
+     Diferença de temperatura em relação à Podium Brindes: lá os neutros
+     são quentes (stone), aqui são frios (slate). Só isso já separa as duas. */
+  --graphite-950: #070809;
+  --graphite-900: #101317;
+  --graphite-850: #161a1f;
+  --graphite-800: #1c2128;
+  --graphite-700: #272d36;
+  --graphite-600: #39414c;
+
+  /* ---- Papel frio (base clara) ---- */
+  --paper: #ffffff;
+  --paper-50: #f6f7f9;
+  --paper-100: #edeff3;
+  --paper-200: #dfe3e9;
+  --paper-300: #c9cfd8;
+
+  /* ---- Tinta fria ---- */
+  --ink-900: #0b0d10;
+  --ink-800: #16191e;
+  --ink-600: #3d444e;
+  --ink-500: #545c68;
+  --ink-400: #7a828f;
+
+  /* ============================================================
+     ACENTOS METÁLICOS: hierarquia invertida vs Podium Brindes
+     1º PRATA/PLATINA   2º OURO   3º BRONZE
+     ============================================================ */
+
+  /* --- PRATA (acento primário) --- */
+  --silver: #c9d1d9;           /* cromo claro. SÓ fundo escuro. 12,07:1 em #101317 */
+  --silver-light: #eef2f6;     /* brilho em fundo escuro. 16,4:1 em #101317 */
+  --silver-deep: #8b95a1;      /* aço médio. SÓ borda/traço. 3,04:1 em #fff (AA não-texto) */
+  --silver-ink: #3d4757;       /* aço escovado. Papel "prata" em fundo CLARO.
+                                  9,39:1 em #fff · 8,76:1 em #f6f7f9 · 8,15:1 em #edeff3 */
+  --silver-ink-hover: #2b3441; /* hover do acento em fundo claro. 12,4:1 em #fff */
+  --silver-edge: rgba(201, 209, 217, 0.22); /* fio de luz no topo das faixas escuras */
+
+  /* --- OURO (acento secundário: CTA e realce de 1º lugar) --- */
+  --gold: #e0b33c;             /* ouro decorativo. SÓ fundo escuro. 9,47:1 em #101317 */
+  --gold-cta: #8f6200;         /* ouro WCAG-safe para texto em fundo claro. 5,00:1 em #f6f7f9 */
+  --gold-cta-hover: #7a5300;   /* 6,85:1 com texto branco */
+  --gold-soft: #f5dfa0;
+  --gold-ink: #1a1200;         /* tinta sobre o gradiente do botão. Mínimo 5,94:1 na rampa */
+
+  /* --- BRONZE (terciário, decorativo) --- */
+  --bronze: #c87137;           /* 5,21:1 em #101317 */
+  --bronze-light: #e09a5e;     /* 7,94:1 em #101317 */
+  --bronze-ink: #8a4a1c;       /* variante para fundo claro */
+
+  /* --- ACENTO ESPORTIVO (uso pontual: foco, linhas, hover, detalhe) --- */
+  --sport: #1e3a8a;            /* azul de arena, fundo claro. 10,36:1 em #fff */
+  --sport-bright: #7ba0f5;     /* fundo escuro. 7,26:1 em #101317 */
+  --sport-soft: rgba(30, 58, 138, 0.08);   /* wash em fundo claro */
+  --sport-glow: rgba(123, 160, 245, 0.16); /* wash em fundo escuro */
+
+  /* ---- Papéis semânticos ---- */
+  --bg: var(--paper);
+  --bg-alt: var(--paper-50);
+  --surface: var(--paper);
+  --surface-dark: var(--graphite-900);
+  --surface-deep: #0e1524;     /* grafite azulado, para faixas escuras alternativas */
+
+  --text: var(--ink-800);            /* 17,62:1 em #fff · 16,44:1 em #f6f7f9 */
+  --text-muted: var(--ink-500);      /* 6,76:1 em #fff · 6,30:1 em #f6f7f9 */
+  --text-on-dark: #f5f7fa;           /* 17,35:1 em #101317 · 18,68:1 em #070809 */
+  --text-on-dark-muted: #a7b0bd;     /* 8,50:1 em #101317 */
+
+  --border: var(--paper-200);
+  --border-strong: var(--paper-300);
+  --border-dark: rgba(201, 209, 217, 0.14);
+
+  --accent: var(--silver-ink);          /* PRIMÁRIO em fundo claro */
+  --accent-hover: var(--silver-ink-hover);
+  --accent-on-dark: var(--silver);      /* PRIMÁRIO em fundo escuro */
+  --ring: var(--sport);                 /* foco em fundo claro. 10,36:1 */
+  --ring-on-dark: var(--sport-bright);  /* foco em fundo escuro. 7,26:1 */
+
+  --price: var(--gold-cta);             /* preço em fundo claro. 5,00:1 em #f6f7f9 */
+  --price-on-dark: var(--gold);         /* preço em fundo escuro. 9,47:1 */
+
+  --danger: #dc2626;                    /* 4,83:1 em #fff */
+  --success: #15803d;                   /* 5,02:1 em #fff */
+  --danger-on-dark: #f87171;            /* 6,73:1 em #101317 */
+  --success-on-dark: #4ade80;           /* 10,69:1 em #101317 */
+
+  /* ---- Stops dos gradientes metálicos (usados também nos <stop> do SVG) ---- */
+  --chrome-1: #ffffff;
+  --chrome-2: #f1f5f9;
+  --chrome-3: #d5dce4;
+  --chrome-4: #c9d1d9;
+  /* Os dois stops mais escuros da rampa ficam claros o bastante para o
+     título do hero (--grad-metal recortado no texto) manter contraste
+     sobre o grafite: #a8b2bd = 8,7:1 e #8e99a5 = 6,3:1 em #101317. */
+  --chrome-5: #a8b2bd;
+  --chrome-6: #8e99a5;
+
+  /* ---- Gradientes ----
+     Atenção: --grad-metal agora é CROMO, não ouro. Isso re-skina
+     .text-metal, .steps__line e .step__num sem tocar nos componentes. */
+  --grad-metal: linear-gradient(
+    118deg,
+    var(--chrome-1) 0%,
+    var(--chrome-3) 28%,
+    var(--chrome-6) 52%,
+    var(--chrome-2) 74%,
+    var(--chrome-5) 100%
+  );
+  --grad-silver: var(--grad-metal); /* alias de compatibilidade */
+
+  /* Ouro decorativo (sem texto por cima) */
+  --grad-gold: linear-gradient(135deg, #f5dfa0 0%, #e0b33c 38%, #8f6200 72%, #e0b33c 100%);
+
+  /* Ouro do BOTÃO: faixa de luminância estreita, para o texto --gold-ink
+     passar AA em TODOS os stops (mínimo 5,94:1 no stop mais escuro). */
+  --grad-gold-cta: linear-gradient(
+    120deg,
+    #f5dfa0 0%,   /* 14,11:1 com --gold-ink */
+    #e5b94e 32%,  /* 10,07:1 */
+    #d9a62e 58%,  /*  8,35:1 */
+    #b98a16 100%  /*  5,94:1 */
+  );
+
+  --grad-bronze: linear-gradient(135deg, #e09a5e 0%, #c87137 55%, #8a4a1c 100%);
+
+  /* Faixa de pódio: bronze, prata, ouro. Motivo da rede. */
+  --grad-podium: linear-gradient(90deg, #c87137 0%, #c9d1d9 50%, #e0b33c 100%);
+
+  /* Faixas escuras */
+  --grad-dark-hero: radial-gradient(120% 120% at 20% -10%, #1b2230 0%, #101317 48%, #070809 100%);
+  --grad-dark-arena: radial-gradient(120% 110% at 80% 0%, #16233d 0%, #0e1524 52%, #070809 100%);
+
+  /* ---- Tintas e vidros (evita hex solto nos componentes) ---- */
+  /* Fundo do header depois do scroll: SÓLIDO de propósito. Com alpha, o
+     marquee e o conteúdo passavam por trás dos links. E nada de
+     backdrop-filter aqui: ele cria um containing block que quebra o
+     position:fixed do menu mobile, que é filho do header. */
+  --header-bg: var(--graphite-950);
+  --glass-dark: rgba(7, 8, 9, 0.92);
+  --glass-light: rgba(255, 255, 255, 0.82);
+  --on-dark-strong: #ffffff;
+  --on-dark-soft: rgba(245, 247, 250, 0.82);
+  --on-dark-faint: rgba(245, 247, 250, 0.42);
+  --tint-accent-8: rgba(61, 71, 87, 0.08);
+  --tint-accent-15: rgba(61, 71, 87, 0.15);
+  --tint-silver-10: rgba(201, 209, 217, 0.1);
+  --tint-silver-16: rgba(201, 209, 217, 0.16);
+  --tint-gold-12: rgba(224, 179, 60, 0.12);
+  --tint-gold-30: rgba(224, 179, 60, 0.3);
+  --tint-bronze-08: rgba(200, 113, 55, 0.08);
+  /* Luzes que vagam no fundo do hero. Todas em prata: a cor quente do hero
+     fica por conta do CTA, do selo e do rótulo, não do fundo. As três
+     intensidades diferentes é que dão profundidade. */
+  --orb-silver: rgba(201, 209, 217, 0.55);
+  --orb-silver-soft: rgba(201, 209, 217, 0.4);
+  --orb-silver-faint: rgba(201, 209, 217, 0.26);
+
+  /* Lavagens quentes para as faixas claras. Sem elas o miolo do site fica
+     só branco e cinza, sem nada da rampa metálica da marca. */
+  --wash-gold: rgba(217, 166, 30, 0.11);
+  --wash-bronze: rgba(200, 113, 55, 0.09);
+  --wash-silver: rgba(120, 131, 143, 0.09);
+  --wash-sport: rgba(30, 58, 138, 0.07);
+
+  /* Tom da barra de filtros quando ela gruda no topo do catálogo. Precisa
+     ser opaco e igual ao ponto da lavagem em que ela para. */
+  --catalog-sticky-bg: #fdfbf6;
+  --swatch-border: rgba(11, 13, 16, 0.14);
+  --swatch-inner: rgba(255, 255, 255, 0.4);
+  --focus-shadow: 0 0 0 3px rgba(30, 58, 138, 0.18);
+  --scrim: rgba(7, 8, 9, 0.72);
+  --scrim-soft: rgba(7, 8, 9, 0.6);
+
+  /* ---- Tipografia ---- */
+  --font-display: 'Sora', system-ui, -apple-system, sans-serif;
+  --font-body: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+
+  --fs-xs: 0.75rem;
+  --fs-sm: 0.875rem;
+  --fs-base: 1rem;
+  --fs-md: 1.125rem;
+  --fs-lg: clamp(1.25rem, 1.1rem + 0.7vw, 1.5rem);
+  --fs-xl: clamp(1.5rem, 1.2rem + 1.4vw, 2.125rem);
+  --fs-2xl: clamp(2rem, 1.5rem + 2.4vw, 3.25rem);
+  --fs-3xl: clamp(2.75rem, 1.8rem + 4.2vw, 5rem);
+  --fs-numeral: clamp(3.5rem, 2rem + 6vw, 6rem); /* numerais vazados do "Como Funciona" */
+
+  --fw-light: 300;
+  --fw-normal: 400;
+  --fw-medium: 500;
+  --fw-semibold: 600;
+  --fw-bold: 700;
+  --fw-black: 800;
+
+  --lh-tight: 1.05;
+  --lh-snug: 1.3;
+  --lh-normal: 1.6;
+
+  --tracking-tight: -0.03em;
+  --tracking-eyebrow: 0.18em;
+
+  /* ---- Espaçamento (escala 4/8) ---- */
+  --sp-1: 0.25rem;
+  --sp-2: 0.5rem;
+  --sp-3: 0.75rem;
+  --sp-4: 1rem;
+  --sp-5: 1.5rem;
+  --sp-6: 2rem;
+  --sp-7: 3rem;
+  --sp-8: 4rem;
+  --sp-9: 6rem;
+  --sp-10: 8rem;
+
+  --section-y: clamp(4.5rem, 3rem + 5.5vw, 7.5rem);
+
+  /* ---- Layout ---- */
+  --container: 1200px;
+  --container-narrow: 820px;
+  --gutter: clamp(1.25rem, 4vw, 2.5rem);
+
+  /* ---- Raios ---- */
+  --r-sm: 6px;
+  --r-md: 10px;
+  --r-lg: 18px;
+  --r-plate: 18px 3px 18px 3px; /* canto de placa de troféu (cards) */
+  --r-full: 999px;
+
+  /* ---- Sombras (frias, não marrons como na Brindes) ---- */
+  --shadow-sm: 0 1px 2px rgba(11, 13, 16, 0.05), 0 1px 3px rgba(11, 13, 16, 0.07);
+  --shadow-md: 0 4px 12px rgba(11, 13, 16, 0.07), 0 10px 28px rgba(11, 13, 16, 0.06);
+  --shadow-lg: 0 14px 34px rgba(11, 13, 16, 0.1), 0 28px 64px rgba(11, 13, 16, 0.1);
+  --shadow-accent: 0 8px 24px rgba(61, 71, 87, 0.22);
+  --shadow-gold: 0 10px 28px rgba(224, 179, 60, 0.32);
+  --shadow-sport: 0 8px 22px rgba(30, 58, 138, 0.22);
+
+  /* ---- Motion ---- */
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --dur-fast: 160ms;
+  --dur-mid: 260ms;
+  --dur-slow: 420ms;
+
+  /* ---- z-index ---- */
+  --z-base: 1;
+  --z-catalog-sticky: 20;
+  --z-header: 100;
+  --z-menu: 200;
+  --z-overlay: 300;
+}

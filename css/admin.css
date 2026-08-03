@@ -1,0 +1,495 @@
+/* ============================================================
+   admin.css: painel de manutenção do catálogo
+   ============================================================ */
+
+body.admin {
+  background: var(--paper-50);
+  color: var(--text);
+}
+
+/* ---------- Login ---------- */
+.admin-login {
+  min-height: 100dvh;
+  display: grid;
+  place-items: center;
+  padding: var(--sp-5);
+  background: var(--grad-dark-hero);
+}
+
+.admin-login__card {
+  width: min(400px, 100%);
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-4);
+  padding: var(--sp-7);
+  background: var(--surface);
+  border-radius: var(--r-lg);
+  box-shadow: var(--shadow-lg);
+  text-align: center;
+}
+
+.admin-login__card img {
+  height: 72px;
+  width: auto;
+  margin: 0 auto;
+}
+
+.admin-login__card h1 {
+  font-size: var(--fs-lg);
+}
+
+.admin-login__mode {
+  font-size: var(--fs-sm);
+  color: var(--text-muted);
+  margin-top: calc(var(--sp-3) * -1);
+}
+
+.admin-login__card .field {
+  text-align: left;
+}
+
+.admin-login__error {
+  color: var(--danger);
+  font-size: var(--fs-sm);
+}
+
+/* ---------- Header ---------- */
+.admin-header {
+  position: sticky;
+  top: 0;
+  z-index: var(--z-header);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-4);
+  padding: var(--sp-4) var(--gutter);
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+}
+
+.admin-header__brand {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  font-family: var(--font-display);
+}
+
+.admin-header__brand img {
+  height: 36px;
+  width: auto;
+}
+
+.admin-header__brand div {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.2;
+}
+
+.admin-badge {
+  font-size: var(--fs-xs);
+  font-weight: var(--fw-medium);
+  color: var(--gold-cta);
+}
+
+.admin-header__actions {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+}
+
+/* ---------- Main / toolbar ---------- */
+.admin-main {
+  max-width: 1100px;
+  margin-inline: auto;
+  padding: var(--sp-6) var(--gutter) var(--sp-9);
+}
+
+.admin-toolbar {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--sp-4);
+  flex-wrap: wrap;
+  margin-bottom: var(--sp-6);
+}
+
+.admin-toolbar h2 {
+  font-size: var(--fs-xl);
+}
+
+.admin-count {
+  color: var(--text-muted);
+  font-size: var(--fs-sm);
+}
+
+.admin-toolbar__actions {
+  display: flex;
+  gap: var(--sp-3);
+  flex-wrap: wrap;
+}
+
+.admin-filter {
+  min-height: 48px;
+  padding: 0 1rem;
+  border: 1.5px solid var(--border);
+  border-radius: var(--r-md);
+  background: var(--surface);
+}
+
+/* ---------- Grid de produtos ---------- */
+.admin-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 260px), 1fr));
+  gap: var(--sp-5);
+}
+
+.admin-empty {
+  text-align: center;
+  color: var(--text-muted);
+  padding: var(--sp-8);
+}
+
+.admin-card {
+  display: flex;
+  flex-direction: column;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+}
+
+.admin-card__media {
+  position: relative;
+  aspect-ratio: 4 / 3;
+  /* Fundo branco porque as fotos de troféu vêm recortadas em branco. */
+  background: var(--paper);
+}
+
+/* `contain`, e não `cover`: troféu é alto e estreito, e o cover cortaria
+   a taça e a base logo na grade do painel. */
+.admin-card__media img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  padding: var(--sp-3);
+}
+
+.admin-card__noimg {
+  display: grid;
+  place-items: center;
+  height: 100%;
+  /* --ink-400 dava 3,88:1 em branco, abaixo do minimo de 4,5:1. */
+  color: var(--text-muted);
+  font-size: var(--fs-sm);
+}
+
+.admin-card__star {
+  position: absolute;
+  top: var(--sp-2);
+  left: var(--sp-2);
+  padding: 0.2rem 0.6rem;
+  font-size: var(--fs-xs);
+  font-weight: var(--fw-medium);
+  color: var(--gold-ink);
+  background: var(--grad-gold-cta);
+  border-radius: var(--r-full);
+}
+
+.admin-card__body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-1);
+  padding: var(--sp-4);
+  flex: 1;
+}
+
+.admin-card__cat {
+  font-size: var(--fs-xs);
+  font-weight: var(--fw-medium);
+  color: var(--accent);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.admin-card__name {
+  font-size: var(--fs-md);
+}
+
+.admin-card__price {
+  font-family: var(--font-display);
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-semibold);
+  color: var(--price);
+}
+
+.admin-card__desc {
+  font-size: var(--fs-sm);
+  color: var(--text-muted);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.admin-card__actions {
+  display: flex;
+  gap: var(--sp-2);
+  padding: var(--sp-4);
+  border-top: 1px solid var(--border);
+}
+
+.admin-card__actions .btn {
+  flex: 1;
+  min-height: 40px;
+  padding: 0.5rem;
+}
+
+/* ---------- Modais ---------- */
+.admin-modal {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-overlay);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: var(--sp-4);
+}
+
+.admin-modal.open {
+  display: flex;
+}
+
+.admin-modal__backdrop {
+  position: fixed;
+  inset: 0;
+  background: var(--scrim-soft);
+  backdrop-filter: blur(4px);
+}
+
+.admin-modal__card {
+  position: relative;
+  z-index: 1;
+  width: min(560px, 100%);
+  max-height: calc(100dvh - 2rem);
+  overflow: auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-4);
+  padding: var(--sp-6);
+  background: var(--surface);
+  border-radius: var(--r-lg);
+  box-shadow: var(--shadow-lg);
+}
+
+.admin-modal--sm .admin-modal__card {
+  width: min(420px, 100%);
+}
+
+.admin-modal__card h2 {
+  font-size: var(--fs-lg);
+}
+
+.admin-modal__close {
+  position: absolute;
+  top: var(--sp-3);
+  right: var(--sp-3);
+  width: 40px;
+  height: 40px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--r-full);
+  color: var(--text-muted);
+}
+
+.admin-modal__close:hover {
+  background: var(--paper-100);
+}
+
+.admin-modal__close svg {
+  width: 20px;
+  height: 20px;
+}
+
+.admin-modal__error {
+  color: var(--danger);
+  font-size: var(--fs-sm);
+}
+
+.admin-modal__foot {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--sp-3);
+  margin-top: var(--sp-2);
+}
+
+/* ---------- Upload ---------- */
+.admin-upload {
+  display: flex;
+  gap: var(--sp-4);
+  align-items: flex-start;
+}
+
+.admin-upload__preview {
+  flex: 0 0 120px;
+  width: 120px;
+  height: 120px;
+  border-radius: var(--r-md);
+  border: 1.5px dashed var(--border);
+  background: var(--paper-100);
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  color: var(--text-muted);
+  font-size: var(--fs-xs);
+  text-align: center;
+}
+
+/* contain: a previa mostra o trofeu inteiro, sem cortar a taca. */
+.admin-upload__preview img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  padding: var(--sp-2);
+}
+
+.admin-upload__actions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+  align-items: flex-start;
+}
+
+.admin-hint {
+  font-size: var(--fs-xs);
+  color: var(--text-muted);
+}
+
+/* ---------- Seletor de cores ---------- */
+.color-selected {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-2);
+  min-height: 34px;
+}
+
+.color-empty {
+  font-size: var(--fs-sm);
+  color: var(--text-muted);
+}
+
+.color-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+  padding: 0.3rem 0.6rem 0.3rem 0.4rem;
+  font-size: var(--fs-sm);
+  background: var(--paper-100);
+  border: 1px solid var(--border);
+  border-radius: var(--r-full);
+}
+
+.color-chip .color-dot {
+  width: 16px;
+  height: 16px;
+  border-radius: 4px;
+  border: 1px solid var(--swatch-border);
+}
+
+.color-chip svg {
+  width: 14px;
+  height: 14px;
+  color: var(--text-muted);
+}
+
+.color-chip:hover {
+  border-color: var(--danger);
+}
+
+.color-palette {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-2);
+  margin-top: var(--sp-1);
+}
+
+.color-palette .swatch.is-on {
+  outline: 3px solid var(--gold-cta);
+  outline-offset: 1px;
+}
+
+.color-custom {
+  display: flex;
+  gap: var(--sp-2);
+  align-items: center;
+  margin-top: var(--sp-3);
+  flex-wrap: wrap;
+}
+
+.color-custom input[type='color'] {
+  width: 44px;
+  height: 44px;
+  padding: 2px;
+  border: 1.5px solid var(--border);
+  border-radius: var(--r-md);
+  background: none;
+  cursor: pointer;
+}
+
+.color-custom input[type='text'] {
+  flex: 1;
+  min-width: 140px;
+  min-height: 44px;
+  padding: 0 0.85rem;
+  border: 1.5px solid var(--border);
+  border-radius: var(--r-md);
+}
+
+.admin-check {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  font-size: var(--fs-sm);
+}
+
+.admin-check input {
+  width: 18px;
+  height: 18px;
+}
+
+/* ---------- Toast ---------- */
+.admin-toast {
+  position: fixed;
+  bottom: var(--sp-5);
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: var(--z-overlay);
+  padding: 0.85rem 1.4rem;
+  background: var(--ink-900);
+  color: var(--on-dark-strong);
+  border-radius: var(--r-full);
+  box-shadow: var(--shadow-lg);
+  font-size: var(--fs-sm);
+}
+
+.admin-toast.is-error {
+  background: var(--danger);
+}
+
+.admin-toast[hidden] {
+  display: none;
+}
+
+@media (max-width: 560px) {
+  .admin-upload {
+    flex-direction: column;
+  }
+  .admin-toolbar__actions {
+    width: 100%;
+  }
+  .admin-toolbar__actions .btn,
+  .admin-filter {
+    flex: 1;
+  }
+}

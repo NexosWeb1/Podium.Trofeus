@@ -1,0 +1,304 @@
+/* ============================================================
+   layout.css: header/nav, footer, grids das seções
+   ============================================================ */
+
+/* ---------- Header / Nav ---------- */
+.site-header {
+  position: fixed;
+  inset: 0 0 auto 0;
+  z-index: var(--z-header);
+  transition: background var(--dur-mid) var(--ease-out),
+    box-shadow var(--dur-mid) var(--ease-out), border-color var(--dur-mid) var(--ease-out);
+  border-bottom: 1px solid transparent;
+}
+
+/* Sem backdrop-filter aqui: ele criaria um "containing block" que quebra
+   o position:fixed do menu mobile (filho do header). */
+.site-header.scrolled {
+  background: var(--header-bg);
+  border-bottom-color: var(--border-dark);
+}
+
+.nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-5);
+  min-height: 72px;
+}
+
+.nav__logo {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-3);
+  font-family: var(--font-display);
+  font-weight: var(--fw-bold);
+  font-size: var(--fs-md);
+  letter-spacing: 0.02em;
+  color: var(--on-dark-strong);
+}
+
+.nav__logo img {
+  height: 40px;
+  width: auto;
+}
+
+.nav__links {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-6);
+}
+
+.nav__link {
+  font-family: var(--font-display);
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-medium);
+  color: var(--on-dark-soft);
+  position: relative;
+  padding-block: var(--sp-2);
+  transition: color var(--dur-fast) var(--ease-out);
+}
+
+.nav__link::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: 2px;
+  background: var(--grad-podium);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform var(--dur-mid) var(--ease-out);
+}
+
+.nav__link:hover,
+.nav__link.is-active {
+  color: var(--on-dark-strong);
+}
+
+.nav__link:hover::after,
+.nav__link.is-active::after {
+  transform: scaleX(1);
+}
+
+.nav__actions {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-4);
+}
+
+/* Botão dentro do menu é só para o mobile; escondido no desktop */
+.nav__menu > .btn {
+  display: none;
+}
+
+/* Hamburger */
+.nav__toggle {
+  display: none;
+  width: 44px;
+  height: 44px;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 5px;
+}
+
+.nav__toggle span {
+  display: block;
+  width: 24px;
+  height: 2px;
+  background: var(--on-dark-strong);
+  border-radius: var(--r-full);
+  transition: transform var(--dur-mid) var(--ease-out), opacity var(--dur-fast) var(--ease-out);
+}
+
+.nav__toggle[aria-expanded='true'] span:nth-child(1) {
+  transform: translateY(7px) rotate(45deg);
+}
+.nav__toggle[aria-expanded='true'] span:nth-child(2) {
+  opacity: 0;
+}
+.nav__toggle[aria-expanded='true'] span:nth-child(3) {
+  transform: translateY(-7px) rotate(-45deg);
+}
+
+/* Os reveals horizontais ([data-reveal="left"|"right"]) deslocam o elemento
+   em 32px antes de aparecer. Num container que já ocupa a largura toda, esse
+   deslocamento criava scroll horizontal no celular até a animação terminar.
+   `clip` corta o excesso sem virar container de rolagem, então o
+   position:sticky da barra de filtros do catálogo continua funcionando
+   (o que não aconteceria com `hidden`). */
+main {
+  overflow-x: clip;
+}
+
+/* ---------- Footer ---------- */
+.site-footer {
+  background: var(--graphite-950);
+  color: var(--text-on-dark);
+  padding-block: var(--sp-8) var(--sp-6);
+  border-top: 3px solid transparent;
+  border-image: var(--grad-podium) 1;
+}
+
+.footer-grid {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr 1fr;
+  gap: var(--sp-7);
+}
+
+.footer-brand__logo {
+  height: 56px;
+  width: auto;
+  margin-bottom: var(--sp-4);
+}
+
+.footer-brand p {
+  color: var(--text-on-dark-muted);
+  font-size: var(--fs-sm);
+  max-width: 34ch;
+}
+
+.footer-col h3 {
+  font-size: var(--fs-sm);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: var(--sp-4);
+}
+
+.footer-col ul {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-3);
+}
+
+.footer-col a,
+.footer-col li {
+  color: var(--text-on-dark-muted);
+  font-size: var(--fs-sm);
+  transition: color var(--dur-fast) var(--ease-out);
+}
+
+.footer-col a:hover {
+  color: var(--on-dark-strong);
+}
+
+.footer-contact-item {
+  display: flex;
+  gap: var(--sp-3);
+  align-items: flex-start;
+}
+
+.footer-contact-item svg {
+  width: 18px;
+  height: 18px;
+  flex: 0 0 auto;
+  color: var(--gold);
+  margin-top: 2px;
+}
+
+.footer-social {
+  display: flex;
+  gap: var(--sp-3);
+  margin-top: var(--sp-4);
+}
+
+.footer-social a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  border: 1px solid var(--border-dark);
+  border-radius: var(--r-full);
+  color: var(--text-on-dark-muted);
+  transition: color var(--dur-fast) var(--ease-out),
+    border-color var(--dur-fast) var(--ease-out), background var(--dur-fast) var(--ease-out);
+}
+
+.footer-social a:hover {
+  color: var(--graphite-950);
+  background: var(--gold);
+  border-color: var(--gold);
+}
+
+.footer-social svg {
+  width: 20px;
+  height: 20px;
+}
+
+.footer-bottom {
+  margin-top: var(--sp-7);
+  border-top: 1px solid var(--border-dark);
+}
+
+.footer-bottom__inner {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--sp-4);
+  flex-wrap: wrap;
+  padding-block: var(--sp-5);
+  font-size: var(--fs-xs);
+  color: var(--text-on-dark-muted);
+}
+
+.footer-admin-link {
+  margin-top: var(--sp-4);
+}
+
+/* ---------- Responsivo: nav ---------- */
+@media (max-width: 900px) {
+  .nav__toggle {
+    display: flex;
+  }
+
+  .nav__links,
+  .nav__actions .btn {
+    display: none;
+  }
+
+  .nav__menu {
+    position: fixed;
+    inset: 72px 0 0 0;
+    z-index: var(--z-menu);
+    display: flex;
+    flex-direction: column;
+    gap: var(--sp-6);
+    padding: var(--sp-7) var(--gutter);
+    background: var(--graphite-950);
+    transform: translateX(100%);
+    transition: transform var(--dur-slow) var(--ease-out);
+    visibility: hidden;
+  }
+
+  .nav__menu.open {
+    transform: translateX(0);
+    visibility: visible;
+  }
+
+  .nav__menu .nav__links {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--sp-5);
+  }
+
+  .nav__menu .nav__link {
+    font-size: var(--fs-lg);
+  }
+
+  .nav__menu .btn {
+    display: inline-flex;
+    align-self: flex-start;
+    margin-top: var(--sp-4);
+  }
+}
+
+@media (max-width: 760px) {
+  .footer-grid {
+    grid-template-columns: 1fr;
+    gap: var(--sp-6);
+  }
+}

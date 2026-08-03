@@ -1,0 +1,175 @@
+/* ============================================================
+   base.css: elementos, tipografia, container, utilitários
+   ============================================================ */
+
+body {
+  font-family: var(--font-body);
+  font-size: var(--fs-base);
+  font-weight: var(--fw-normal);
+  line-height: var(--lh-normal);
+  color: var(--text);
+  background: var(--bg);
+}
+
+h1,
+h2,
+h3,
+h4 {
+  font-family: var(--font-display);
+  font-weight: var(--fw-bold);
+  line-height: var(--lh-tight);
+  letter-spacing: -0.02em;
+  color: inherit;
+}
+
+h1 {
+  font-size: var(--fs-3xl);
+}
+h2 {
+  font-size: var(--fs-2xl);
+}
+h3 {
+  font-size: var(--fs-lg);
+  letter-spacing: -0.01em;
+}
+
+p {
+  max-width: 65ch;
+}
+
+strong {
+  font-weight: var(--fw-semibold);
+}
+
+/* ---- Container ---- */
+.container {
+  width: 100%;
+  max-width: var(--container);
+  margin-inline: auto;
+  padding-inline: var(--gutter);
+}
+
+.container--narrow {
+  max-width: var(--container-narrow);
+}
+
+/* ---- Section shell ---- */
+.section {
+  padding-block: var(--section-y);
+}
+
+.section--dark {
+  background: var(--surface-dark);
+  color: var(--text-on-dark);
+  /* Fio de luz cromado na quina superior: faz a faixa parecer metal
+     escovado em vez de um retângulo pintado de cinza. */
+  box-shadow: inset 0 1px 0 var(--silver-edge);
+}
+
+/* ---- Eyebrow / kicker ---- */
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-3);
+  font-family: var(--font-display);
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-semibold);
+  letter-spacing: var(--tracking-eyebrow);
+  text-transform: uppercase;
+  color: var(--gold-cta);
+}
+
+/* Fita do pódio (bronze, prata, ouro) antes de cada rótulo de seção.
+   É a assinatura tricolor da logo repetida em toda a página. Como o
+   .eyebrow é inline-flex, o pseudo-elemento já entra como item do flex. */
+.eyebrow::before {
+  content: '';
+  flex: 0 0 auto;
+  width: 30px;
+  height: 3px;
+  border-radius: 2px;
+  background: var(--grad-podium);
+}
+
+/* Em faixa escura o ouro pode ser o metálico cheio (9,47:1 em #101317).
+   O --gold-cta é escuro demais para fundo grafite: daria 3,2:1.
+   `.about` entra na lista porque é escura por regra própria, sem a
+   classe .section--dark. */
+.section--dark .eyebrow,
+.hero .eyebrow,
+.about .eyebrow,
+.site-footer .eyebrow {
+  color: var(--gold);
+}
+
+/* ---- Section header ---- */
+.section-head {
+  max-width: 60ch;
+  margin-bottom: var(--sp-7);
+}
+
+.section-head p {
+  margin-top: var(--sp-4);
+  color: var(--text-muted);
+  font-size: var(--fs-md);
+}
+
+.section--dark .section-head p {
+  color: var(--text-on-dark-muted);
+}
+
+.section-head--center {
+  margin-inline: auto;
+  text-align: center;
+}
+
+.section-head--center p {
+  margin-inline: auto;
+}
+
+/* ---- Metallic text ---- */
+.text-metal {
+  background: var(--grad-metal);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* ---- Utilities ---- */
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.skip-link {
+  position: absolute;
+  left: var(--sp-4);
+  top: -100px;
+  z-index: var(--z-overlay);
+  padding: var(--sp-3) var(--sp-5);
+  background: var(--ink-900);
+  color: var(--on-dark-strong);
+  border-radius: var(--r-sm);
+  transition: top var(--dur-fast) var(--ease-out);
+}
+
+.skip-link:focus {
+  top: var(--sp-4);
+}
+
+:where(a, button, input, select, textarea):focus-visible {
+  outline: 3px solid var(--ring);
+  outline-offset: 2px;
+  border-radius: var(--r-sm);
+}
+
+.no-scroll {
+  overflow: hidden;
+}

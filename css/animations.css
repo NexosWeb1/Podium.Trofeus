@@ -1,0 +1,273 @@
+/* ============================================================
+   animations.css: estados de reveal, keyframes, reduced-motion
+   Base é VISÍVEL; JS adiciona .js-anim para revelar via GSAP.
+   ============================================================ */
+
+/* Keyframes (CSS puro) */
+@keyframes heroGlow {
+  0% {
+    opacity: 0.55;
+    transform: translate(0, 0) scale(1);
+  }
+  100% {
+    opacity: 1;
+    transform: translate(-3%, 4%) scale(1.08);
+  }
+}
+
+@keyframes marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+/* Flutuação vertical suave (imagem/badge do hero) */
+@keyframes floatY {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-14px);
+  }
+}
+
+/* Deriva da malha de linhas do fundo */
+@keyframes gridDrift {
+  from {
+    background-position: 0 0, 0 0;
+  }
+  to {
+    background-position: 64px 64px, 64px 64px;
+  }
+}
+
+/* Luzes douradas vagando pela tela (horizontal + vertical, dessincronizadas) */
+@keyframes orbRoam1 {
+  0% {
+    transform: translate(0, 0) scale(1);
+  }
+  20% {
+    transform: translate(-60%, 40%) scale(1.15);
+  }
+  40% {
+    transform: translate(-110%, 15%) scale(0.95);
+  }
+  60% {
+    transform: translate(-70%, 90%) scale(1.1);
+  }
+  80% {
+    transform: translate(-20%, 55%) scale(1.05);
+  }
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
+}
+
+@keyframes orbRoam2 {
+  0% {
+    transform: translate(0, 0) scale(1);
+  }
+  20% {
+    transform: translate(70%, -50%) scale(1.12);
+  }
+  40% {
+    transform: translate(130%, -20%) scale(0.96);
+  }
+  60% {
+    transform: translate(80%, -80%) scale(1.16);
+  }
+  80% {
+    transform: translate(30%, -35%) scale(1.04);
+  }
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
+}
+
+/* Brilho que varre o texto metálico */
+@keyframes metalShine {
+  0% {
+    background-position: 0% 50%;
+  }
+  100% {
+    background-position: 200% 50%;
+  }
+}
+
+/* Texto metálico animado (usado no hero) */
+.text-metal.text-metal--anim {
+  background-size: 200% auto;
+  animation: metalShine 5s linear infinite;
+}
+
+/* Glow suave flutuando (seção Sobre) */
+@keyframes floatSoft {
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
+  50% {
+    transform: translate(-6%, 8%) scale(1.1);
+  }
+}
+
+/* Estrela do divisor "respirando": balanço leve com escala.
+   Assinatura de movimento oposta ao scaleY vertical das barras da Brindes. */
+@keyframes starBreathe {
+  0%,
+  100% {
+    transform: rotate(-5deg) scale(0.94);
+    opacity: 0.82;
+  }
+  50% {
+    transform: rotate(5deg) scale(1);
+    opacity: 1;
+  }
+}
+
+/* Anel pontilhado girando devagar: leitura de medalha girando na luz */
+@keyframes ringSpin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Entrada dos cards do catálogo (por página) */
+@keyframes cardIn {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes modalIn {
+  from {
+    opacity: 0;
+    transform: translateY(16px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* Spotlight de cursor (vanilla Inspira-ui) */
+.spotlight {
+  position: relative;
+  isolation: isolate;
+}
+
+.spotlight::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  background: radial-gradient(
+    340px circle at var(--mx, 50%) var(--my, 50%),
+    var(--tint-silver-16),
+    transparent 60%
+  );
+  opacity: 0;
+  transition: opacity var(--dur-mid) var(--ease-out);
+}
+
+.spotlight:hover::before {
+  opacity: 1;
+}
+
+/* Reveal states: só aplicados quando o JS liga .js-anim no <html> */
+.js-anim [data-reveal] {
+  opacity: 0;
+  transform: translateY(28px);
+  will-change: transform, opacity;
+}
+
+.js-anim [data-reveal='fade'] {
+  transform: none;
+}
+
+.js-anim [data-reveal='left'] {
+  transform: translateX(-32px);
+}
+
+.js-anim [data-reveal='right'] {
+  transform: translateX(32px);
+}
+
+.js-anim [data-reveal='scale'] {
+  transform: scale(0.94);
+}
+
+/* Estado revelado (GSAP também seta inline; classe é fallback) */
+.js-anim [data-reveal].is-revealed {
+  opacity: 1;
+  transform: none;
+}
+
+/* ---------- Reduced motion: tudo visível e estático ---------- */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .hero__glow,
+  .hero__grid-lines,
+  .hero__orb,
+  .hero__visual,
+  .hero__badge,
+  /* Precisa das duas classes: a regra que liga a animação é
+     `.text-metal.text-metal--anim`, e um seletor de classe só perderia
+     em especificidade. */
+  .text-metal.text-metal--anim,
+  .marquee__track,
+  .product-card,
+  .pmodal__dialog,
+  .pmodal__backdrop,
+  .about::before,
+  .about::after,
+  .section-divider__glyph,
+  .section-divider__ring {
+    animation: none;
+  }
+
+  /* A estrela do divisor para no estado neutro, sem o balanço. */
+  .section-divider__glyph {
+    transform: none;
+    opacity: 1;
+  }
+
+  .js-anim [data-reveal] {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+
+  .product-card::after {
+    display: none;
+  }
+}
