@@ -44,6 +44,20 @@ if (-not $env:GITHUB_TOKEN) {
 # guardar nada em disco.
 $env:GH_TOKEN = $env:GITHUB_TOKEN
 
+# Aceita tanto `GITHUB_REPO=nome-do-repo` quanto a URL de clone inteira
+# colada do GitHub. Com a URL, deriva dono e nome e monta o remote.
+if ($env:GITHUB_REPO -match '^(https?://|git@)') {
+    $env:GITHUB_REMOTE_URL = $env:GITHUB_REPO
+    $slug = $env:GITHUB_REPO -replace '^.*github\.com[:/]', '' -replace '\.git$', ''
+    $env:GITHUB_OWNER = $slug.Split('/')[0]
+    $env:GITHUB_REPO = $slug.Split('/')[-1]
+} elseif ($env:GITHUB_OWNER -and $env:GITHUB_REPO) {
+    $env:GITHUB_REMOTE_URL = "https://github.com/$($env:GITHUB_OWNER)/$($env:GITHUB_REPO).git"
+}
+if ($env:GITHUB_OWNER) {
+    Write-Host "Repositorio: $($env:GITHUB_OWNER)/$($env:GITHUB_REPO)" -ForegroundColor DarkGray
+}
+
 if (Test-Path (Join-Path $raiz '.git')) {
     Push-Location $raiz
     try {

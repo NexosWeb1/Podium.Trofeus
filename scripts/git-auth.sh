@@ -56,6 +56,24 @@ fi
 # O gh CLI le o GH_TOKEN.
 export GH_TOKEN="$GITHUB_TOKEN"
 
+# Aceita tanto `GITHUB_REPO=nome-do-repo` quanto a URL de clone inteira
+# colada do GitHub. Com a URL, deriva dono e nome e monta o remote.
+case "$GITHUB_REPO" in
+  http*://*|git@*)
+    GITHUB_REMOTE_URL="$GITHUB_REPO"
+    _slug="${GITHUB_REPO#*github.com[:/]}"
+    _slug="${_slug%.git}"
+    GITHUB_OWNER="${_slug%%/*}"
+    GITHUB_REPO="${_slug##*/}"
+    ;;
+  *)
+    [ -n "$GITHUB_OWNER" ] && [ -n "$GITHUB_REPO" ] &&
+      GITHUB_REMOTE_URL="https://github.com/$GITHUB_OWNER/$GITHUB_REPO.git"
+    ;;
+esac
+export GITHUB_OWNER GITHUB_REPO GITHUB_REMOTE_URL
+[ -n "$GITHUB_OWNER" ] && echo "Repositorio: $GITHUB_OWNER/$GITHUB_REPO"
+
 if [ -d "$_raiz/.git" ]; then
   [ -n "$GIT_AUTHOR_NAME" ] && git -C "$_raiz" config --local user.name "$GIT_AUTHOR_NAME"
   [ -n "$GIT_AUTHOR_EMAIL" ] && git -C "$_raiz" config --local user.email "$GIT_AUTHOR_EMAIL"
@@ -67,4 +85,4 @@ fi
 echo "Token carregado nesta sessao (${GITHUB_TOKEN:0:4}********${GITHUB_TOKEN: -4})."
 echo "Confira com:  gh auth status"
 
-unset _raiz _nome _mail _linha _valor
+unset _raiz _nome _mail _linha _valor _slug
