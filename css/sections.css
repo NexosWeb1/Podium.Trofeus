@@ -131,9 +131,13 @@
   border-top: 1px solid var(--border-dark);
 }
 
+/* O número fica centrado sobre o rótulo, e não colado na borda esquerda
+   dele. Como o rótulo costuma ser o mais largo, é ele que define o eixo. */
 .hero__trust-item {
   display: flex;
   flex-direction: column;
+  align-items: center;
+  text-align: center;
 }
 
 /* Prata cromada: 12,07:1 sobre o grafite do hero. */

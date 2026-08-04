@@ -66,9 +66,14 @@ function hydrateContactLinks() {
 
   set('contact-phone', CONFIG.phoneDisplay, `tel:+${CONFIG.whatsapp}`);
   set('contact-email', CONFIG.email, `mailto:${CONFIG.email}`);
+  set(
+    'contact-instagram',
+    CONFIG.instagram ? CONFIG.instagramHandle || 'Instagram' : '',
+    CONFIG.instagram
+  );
   set('contact-address', addressText);
 
-  // Instagram (esconde se não houver perfil)
+  // Ícone do Instagram no bloco da marca (esconde se não houver perfil)
   const ig = document.getElementById('social-instagram');
   if (ig) {
     if (CONFIG.instagram) ig.href = CONFIG.instagram;

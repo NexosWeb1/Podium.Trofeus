@@ -15,7 +15,10 @@ export const CONFIG = {
   phoneDisplay: '(37) 99912-0682',
 
   email: 'comercial@podiumbrindes.com.br',
-  instagram: '', // PENDENTE: URL completa do perfil
+
+  // URL completa do perfil e o @ como aparece na tela.
+  instagram: 'https://www.instagram.com/podium_premiacoes/',
+  instagramHandle: '@podium_premiacoes',
 
   address: {
     street: 'Rua Enfermeira Helena, 161',
