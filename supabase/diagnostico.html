@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>Diagnóstico do Supabase | Podium Premiações</title>
+    <link rel="icon" href="../assets/favicon/favicon.ico" sizes="any" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700&family=Inter:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+
+    <link rel="stylesheet" href="../css/reset.css" />
+    <link rel="stylesheet" href="../css/tokens.css" />
+    <link rel="stylesheet" href="../css/base.css" />
+    <link rel="stylesheet" href="../css/components.css" />
+
+    <style>
+      body {
+        background: var(--bg-alt);
+        color: var(--text);
+      }
+      .diag {
+        max-width: 780px;
+        margin-inline: auto;
+        padding: var(--sp-7) var(--gutter) var(--sp-9);
+      }
+      .diag__head {
+        border-bottom: 3px solid transparent;
+        border-image: var(--grad-podium) 1;
+        padding-bottom: var(--sp-4);
+        margin-bottom: var(--sp-6);
+      }
+      .diag h1 {
+        font-size: var(--fs-xl);
+      }
+      .diag__lead {
+        color: var(--text-muted);
+        margin-top: var(--sp-2);
+      }
+      .diag__acoes {
+        display: flex;
+        flex-wrap: wrap;
+        gap: var(--sp-3);
+        align-items: flex-end;
+        margin-bottom: var(--sp-6);
+      }
+      .diag__acoes .field {
+        flex: 1 1 220px;
+      }
+      .check {
+        display: grid;
+        grid-template-columns: 92px 1fr;
+        gap: var(--sp-4);
+        align-items: start;
+        padding: var(--sp-4);
+        border-bottom: 1px solid var(--border);
+      }
+      .check:first-child {
+        border-top: 1px solid var(--border);
+      }
+      .check__tag {
+        font-family: var(--font-display);
+        font-size: var(--fs-xs);
+        font-weight: var(--fw-bold);
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        padding: 0.3rem 0.5rem;
+        border-radius: var(--r-sm);
+        text-align: center;
+      }
+      .check--ok .check__tag {
+        color: var(--success);
+        background: rgba(21, 128, 61, 0.1);
+      }
+      .check--erro .check__tag {
+        color: var(--danger);
+        background: rgba(220, 38, 38, 0.1);
+      }
+      .check--alerta .check__tag {
+        color: var(--gold-cta);
+        background: var(--wash-gold);
+      }
+      .check--rodando .check__tag {
+        color: var(--text-muted);
+        background: var(--paper-100);
+      }
+      .check__nome {
+        font-family: var(--font-display);
+        font-weight: var(--fw-semibold);
+      }
+      .check__detalhe {
+        font-size: var(--fs-sm);
+        color: var(--text-muted);
+        margin-top: var(--sp-1);
+        white-space: pre-wrap;
+        word-break: break-word;
+      }
+      .check__dica {
+        font-size: var(--fs-sm);
+        margin-top: var(--sp-2);
+        padding: var(--sp-3);
+        border-left: 3px solid var(--sport);
+        background: var(--sport-soft);
+        border-radius: 0 var(--r-sm) var(--r-sm) 0;
+      }
+      .resumo {
+        margin-top: var(--sp-6);
+        padding: var(--sp-5);
+        border-radius: var(--r-plate);
+        background: var(--surface);
+        border: 1px solid var(--border);
+        font-family: var(--font-display);
+      }
+      code {
+        font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+        font-size: 0.92em;
+        background: var(--paper-100);
+        padding: 0.1em 0.35em;
+        border-radius: 4px;
+      }
+    </style>
+  </head>
+  <body>
+    <main class="diag">
+      <div class="diag__head">
+        <span class="eyebrow">Ferramenta interna</span>
+        <h1>Diagnóstico da integração com o Supabase</h1>
+        <p class="diag__lead">
+          Confere a conexão, o esquema, as políticas de segurança e o Storage. Rode depois de
+          aplicar o <code>supabase/schema.sql</code> e de preencher o
+          <code>js/supabase-config.js</code>. Esta página não faz parte do site.
+        </p>
+      </div>
+
+      <div class="diag__acoes">
+        <div class="field">
+          <label class="field__label" for="email">E-mail do painel (opcional)</label>
+          <input id="email" type="email" autocomplete="username" placeholder="para testar a escrita" />
+        </div>
+        <div class="field">
+          <label class="field__label" for="senha">Senha</label>
+          <input id="senha" type="password" autocomplete="current-password" />
+        </div>
+        <button class="btn btn--gold" id="rodar" type="button">Rodar diagnóstico</button>
+      </div>
+
+      <div id="lista"></div>
+      <div class="resumo" id="resumo" hidden></div>
+    </main>
+
+    <script type="module">
+      import {
+        SUPABASE_URL,
+        SUPABASE_ANON_KEY,
+        IMAGE_BUCKET,
+        isSupabaseConfigured,
+      } from '../js/supabase-config.js';
+
+      const lista = document.getElementById('lista');
+      const resumo = document.getElementById('resumo');
+      const btn = document.getElementById('rodar');
+
+      const COLUNAS = [
+        'id', 'nome', 'categoria', 'descricao', 'preco',
+        'imagem_url', 'destaque', 'cores', 'specs', 'criado_em',
+      ];
+      const MODALIDADES = ['futebol', 'futevolei', 'beach-tennis', 'volei', 'empresarial'];
+
+      let contagem = { ok: 0, erro: 0, alerta: 0 };
+
+      function bloco(nome) {
+        const el = document.createElement('div');
+        el.className = 'check check--rodando';
+        el.innerHTML = `
+          <span class="check__tag">rodando</span>
+          <div>
+            <div class="check__nome"></div>
+            <div class="check__detalhe"></div>
+          </div>`;
+        el.querySelector('.check__nome').textContent = nome;
+        lista.appendChild(el);
+        return {
+          resolve(estado, detalhe, dica) {
+            el.className = 'check check--' + estado;
+            el.querySelector('.check__tag').textContent =
+              estado === 'ok' ? 'ok' : estado === 'erro' ? 'falhou' : 'atenção';
+            el.querySelector('.check__detalhe').textContent = detalhe || '';
+            if (dica) {
+              const d = document.createElement('div');
+              d.className = 'check__dica';
+              d.innerHTML = dica;
+              el.lastElementChild.appendChild(d);
+            }
+            contagem[estado] += 1;
+          },
+        };
+      }
+
+      async function etapa(nome, fn) {
+        const b = bloco(nome);
+        try {
+          const r = await fn();
+          b.resolve(r.estado || 'ok', r.detalhe, r.dica);
+          return r;
+        } catch (e) {
+          b.resolve('erro', e && e.message ? e.message : String(e));
+          return { estado: 'erro' };
+        }
+      }
+
+      async function rodar() {
+        lista.innerHTML = '';
+        resumo.hidden = true;
+        contagem = { ok: 0, erro: 0, alerta: 0 };
+        btn.disabled = true;
+        btn.textContent = 'Rodando';
+
+        try {
+          // ---- 1. Configuração ----
+          const cfg = await etapa('Credenciais preenchidas', async () => {
+            if (!isSupabaseConfigured()) {
+              return {
+                estado: 'erro',
+                detalhe: 'SUPABASE_URL ou SUPABASE_ANON_KEY estão vazios.',
+                dica:
+                  'Preencha <code>js/supabase-config.js</code> com o Project URL e a chave anon public, ' +
+                  'que ficam em Project Settings &gt; API.',
+              };
+            }
+            if (!/^https:\/\/[a-z0-9-]+\.supabase\.co\/?$/.test(SUPABASE_URL)) {
+              return {
+                estado: 'alerta',
+                detalhe: 'URL fora do padrão: ' + SUPABASE_URL,
+                dica: 'O esperado é algo como <code>https://xxxxxxxx.supabase.co</code>, sem barra no fim.',
+              };
+            }
+            if (/service_role/.test(SUPABASE_ANON_KEY)) {
+              return {
+                estado: 'erro',
+                detalhe: 'A chave colada parece ser a service_role.',
+                dica:
+                  'A service_role IGNORA o RLS e daria escrita total para qualquer visitante. ' +
+                  'Troque pela chave <strong>anon public</strong> e rotacione a service_role.',
+              };
+            }
+            return { detalhe: SUPABASE_URL };
+          });
+          if (cfg.estado === 'erro') return;
+
+          // ---- 2. Biblioteca ----
+          const { createClient } = await import('https://esm.sh/@supabase/supabase-js@2.45.4');
+          const anon = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+          await etapa('Biblioteca @supabase/supabase-js carregada', async () => ({
+            detalhe: 'Import dinâmico do esm.sh, versão fixada em 2.45.4.',
+          }));
+
+          // ---- 3. Leitura pública ----
+          const leitura = await etapa('Leitura pública da tabela produtos', async () => {
+            const { data, error } = await anon.from('produtos').select('id').limit(1);
+            if (error) {
+              return {
+                estado: 'erro',
+                detalhe: `${error.message} (código ${error.code || 'sem código'})`,
+                dica:
+                  error.code === '42P01'
+                    ? 'A tabela não existe. Rode o <code>supabase/schema.sql</code> no SQL Editor.'
+                    : 'Confira se a policy <code>produtos_select_public</code> foi criada.',
+              };
+            }
+            return { detalhe: `Tabela acessível. ${data.length} linha(s) na amostra.` };
+          });
+          if (leitura.estado === 'erro') return;
+
+          // ---- 4. Colunas ----
+          await etapa('Todas as colunas esperadas existem', async () => {
+            const faltando = [];
+            for (const col of COLUNAS) {
+              const { error } = await anon.from('produtos').select(col).limit(1);
+              if (error) faltando.push(col);
+            }
+            if (faltando.length) {
+              return {
+                estado: 'erro',
+                detalhe: 'Faltando: ' + faltando.join(', '),
+                dica:
+                  'Rode o <code>supabase/schema.sql</code> de novo. Ele é idempotente e ' +
+                  'inclui o <code>alter table ... add column if not exists</code>.',
+              };
+            }
+            return { detalhe: COLUNAS.join(', ') };
+          });
+
+          // ---- 5. RLS bloqueia escrita anônima ----
+          await etapa('RLS bloqueia escrita de visitante (crítico)', async () => {
+            const alvo = {
+              nome: 'DIAGNOSTICO_APAGAR',
+              categoria: 'futebol',
+              descricao: 'linha de teste do diagnostico',
+            };
+            const { data, error } = await anon.from('produtos').insert(alvo).select();
+            if (error) {
+              return {
+                detalhe:
+                  'Insert anônimo recusado, como deveria. Mensagem do banco: ' + error.message,
+              };
+            }
+            // Conseguiu escrever: falha grave. Tenta limpar o rastro.
+            const ids = (data || []).map((r) => r.id);
+            let limpou = false;
+            if (ids.length) {
+              const { error: delErr } = await anon.from('produtos').delete().in('id', ids);
+              limpou = !delErr;
+            }
+            return {
+              estado: 'erro',
+              detalhe:
+                'Um visitante sem login conseguiu inserir na tabela.' +
+                (limpou
+                  ? ' A linha de teste foi removida.'
+                  : ' NÃO consegui remover a linha de teste: apague "DIAGNOSTICO_APAGAR" na mão.'),
+              dica:
+                'O RLS está desligado ou uma policy está liberando <code>anon</code> para escrita. ' +
+                'A chave anon é pública, então qualquer pessoa poderia alterar o catálogo. ' +
+                'Rode o <code>supabase/schema.sql</code> e confira o bloco de conferência no fim dele.',
+            };
+          });
+
+          // ---- 6. Modalidades ----
+          await etapa('Modalidades gravadas batem com data/categories.js', async () => {
+            const { data, error } = await anon.from('produtos').select('categoria');
+            if (error) throw error;
+            const usadas = [...new Set((data || []).map((r) => r.categoria))];
+            const invalidas = usadas.filter((c) => !MODALIDADES.includes(c));
+            if (invalidas.length) {
+              return {
+                estado: 'erro',
+                detalhe: 'Modalidades que nenhum filtro do site reconhece: ' + invalidas.join(', '),
+                dica:
+                  'Os valores válidos são ' +
+                  MODALIDADES.map((m) => `<code>${m}</code>`).join(', ') +
+                  '. Corrija as linhas ou ajuste <code>data/categories.js</code>.',
+              };
+            }
+            return {
+              detalhe: usadas.length
+                ? 'Em uso: ' + usadas.join(', ')
+                : 'Nenhum produto cadastrado ainda, nada a validar.',
+            };
+          });
+
+          // ---- 7. Bucket ----
+          await etapa(`Bucket "${IMAGE_BUCKET}" existe e é público`, async () => {
+            const { error } = await anon.storage.from(IMAGE_BUCKET).list('', { limit: 1 });
+            if (error) {
+              return {
+                estado: 'erro',
+                detalhe: error.message,
+                dica:
+                  'Rode a seção 5 do <code>supabase/schema.sql</code>, que cria o bucket e as policies.',
+              };
+            }
+            const { data } = anon.storage.from(IMAGE_BUCKET).getPublicUrl('teste.jpg');
+            const publico = /\/object\/public\//.test(data.publicUrl);
+            return publico
+              ? { detalhe: 'Leitura pública liberada. Base das URLs: ' + data.publicUrl.replace(/teste\.jpg$/, '') }
+              : {
+                  estado: 'alerta',
+                  detalhe: 'O bucket respondeu, mas a URL não parece pública.',
+                  dica: 'Marque o bucket como público em Storage &gt; produtos &gt; Configuration.',
+                };
+          });
+
+          // ---- 8. Fotos dos produtos carregam ----
+          await etapa('Fotos cadastradas respondem', async () => {
+            const { data, error } = await anon
+              .from('produtos')
+              .select('nome, imagem_url')
+              .not('imagem_url', 'is', null)
+              .limit(5);
+            if (error) throw error;
+            if (!data.length) {
+              return { estado: 'alerta', detalhe: 'Nenhum produto com foto cadastrada ainda.' };
+            }
+            const quebradas = [];
+            for (const p of data) {
+              try {
+                const r = await fetch(p.imagem_url, { method: 'HEAD' });
+                if (!r.ok) quebradas.push(`${p.nome} (HTTP ${r.status})`);
+              } catch (e) {
+                quebradas.push(`${p.nome} (rede)`);
+              }
+            }
+            return quebradas.length
+              ? {
+                  estado: 'erro',
+                  detalhe: 'Fotos que não carregam: ' + quebradas.join(', '),
+                  dica: 'A imagem foi apagada do Storage ou o bucket deixou de ser público.',
+                }
+              : { detalhe: `${data.length} foto(s) conferida(s), todas respondendo.` };
+          });
+
+          // ---- 9. Login e escrita autenticada ----
+          const email = document.getElementById('email').value.trim();
+          const senha = document.getElementById('senha').value;
+
+          if (!email || !senha) {
+            bloco('Login e escrita autenticada').resolve(
+              'alerta',
+              'Pulado: preencha e-mail e senha do painel acima para testar.',
+              'Sem este teste não dá para saber se o usuário do painel consegue cadastrar troféus.'
+            );
+          } else {
+            const auth = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+            const logou = await etapa('Login do painel', async () => {
+              const { data, error } = await auth.auth.signInWithPassword({ email, password: senha });
+              if (error) {
+                return {
+                  estado: 'erro',
+                  detalhe: error.message,
+                  dica:
+                    'Crie o usuário em Authentication &gt; Users &gt; Add user, com ' +
+                    '"Auto Confirm User" marcado. Sem isso o login fica esperando confirmação por e-mail.',
+                };
+              }
+              return { detalhe: 'Autenticado como ' + data.user.email };
+            });
+
+            if (logou.estado !== 'erro') {
+              await etapa('Cadastrar, editar e excluir com login', async () => {
+                const base = {
+                  nome: 'DIAGNOSTICO_APAGAR',
+                  categoria: 'futebol',
+                  descricao: 'linha temporária do diagnóstico',
+                  preco: 12.34,
+                };
+                const ins = await auth.from('produtos').insert(base).select().single();
+                if (ins.error) {
+                  return {
+                    estado: 'erro',
+                    detalhe: 'Insert falhou: ' + ins.error.message,
+                    dica: 'Confira a policy <code>produtos_insert_auth</code>.',
+                  };
+                }
+                const id = ins.data.id;
+                const passos = ['insert ok'];
+
+                const upd = await auth
+                  .from('produtos')
+                  .update({ destaque: true })
+                  .eq('id', id)
+                  .select()
+                  .single();
+                if (upd.error) {
+                  await auth.from('produtos').delete().eq('id', id);
+                  return { estado: 'erro', detalhe: 'Update falhou: ' + upd.error.message };
+                }
+                // O toRow() do store manda patch parcial. Se o update zerasse as
+                // outras colunas, o preço voltaria nulo aqui.
+                if (Number(upd.data.preco) !== 12.34) {
+                  await auth.from('produtos').delete().eq('id', id);
+                  return {
+                    estado: 'erro',
+                    detalhe: 'O update parcial apagou o preço. Esperado 12.34, veio ' + upd.data.preco,
+                  };
+                }
+                passos.push('update parcial preserva as outras colunas');
+
+                const del = await auth.from('produtos').delete().eq('id', id);
+                if (del.error) {
+                  return {
+                    estado: 'erro',
+                    detalhe:
+                      'Delete falhou: ' + del.error.message +
+                      '. Apague "DIAGNOSTICO_APAGAR" na mão.',
+                  };
+                }
+                passos.push('delete ok, nada ficou para trás');
+                return { detalhe: passos.join(' · ') };
+              });
+
+              await etapa('Upload no Storage com login', async () => {
+                const px =
+                  'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==';
+                const blob = await (await fetch(px)).blob();
+                const caminho = `diagnostico-${Date.now().toString(36)}.png`;
+                const up = await auth.storage.from(IMAGE_BUCKET).upload(caminho, blob);
+                if (up.error) {
+                  return {
+                    estado: 'erro',
+                    detalhe: up.error.message,
+                    dica: 'Confira a policy <code>produtos_storage_insert</code>.',
+                  };
+                }
+                const rm = await auth.storage.from(IMAGE_BUCKET).remove([caminho]);
+                return rm.error
+                  ? {
+                      estado: 'alerta',
+                      detalhe:
+                        'Upload funcionou, mas não consegui apagar o arquivo de teste: ' +
+                        rm.error.message +
+                        '. Apague ' + caminho + ' na mão.',
+                      dica: 'Sem o delete, trocar a foto de um troféu deixa a antiga órfã no bucket.',
+                    }
+                  : { detalhe: 'Upload e remoção funcionando. Nada ficou no bucket.' };
+              });
+            }
+
+            await auth.auth.signOut();
+          }
+        } finally {
+          btn.disabled = false;
+          btn.textContent = 'Rodar diagnóstico';
+          resumo.hidden = false;
+          const total = contagem.ok + contagem.erro + contagem.alerta;
+          resumo.textContent =
+            contagem.erro === 0
+              ? `Tudo certo: ${contagem.ok} de ${total} verificações passaram` +
+                (contagem.alerta ? `, ${contagem.alerta} com atenção.` : '.')
+              : `${contagem.erro} verificação(ões) falharam de ${total}. Corrija e rode de novo.`;
+          resumo.style.color =
+            contagem.erro === 0 ? 'var(--success)' : 'var(--danger)';
+        }
+      }
+
+      btn.addEventListener('click', rodar);
+      rodar();
+    </script>
+  </body>
+</html>

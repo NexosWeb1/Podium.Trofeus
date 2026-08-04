@@ -19,6 +19,8 @@ css/                  reset · tokens · base · layout · components · section
 js/                   config · supabase-config · store · price · main · smooth-scroll
                       animations · catalog · product-modal · form · nav · admin
 data/                 categories.js · products.js · colors.js
+supabase/             schema.sql · diagnostico.html
+scripts/              git-auth.ps1 · git-auth.sh
 assets/img/           hero · about · logo · og
 assets/favicon/       favicon.ico · apple-touch-icon · icon-192 · icon-512
 Img/                  arquivos originais do cliente (não são usados pelo site)
@@ -54,77 +56,48 @@ As fotos ficam como dataURL base64 dentro de uma única chave do `localStorage`,
 
 Crie um projeto Supabase **próprio da Podium Premiações**. Não reaproveite o projeto da Podium Brindes: são catálogos diferentes.
 
-### 1. SQL Editor: tabela e RLS
+Todo o esquema mora em [`supabase/schema.sql`](supabase/schema.sql), num arquivo só. Ele é idempotente: rodar de novo não duplica nada nem apaga dados.
 
-```sql
-create table if not exists public.produtos (
-  id          uuid primary key default gen_random_uuid(),
-  nome        text        not null,
-  categoria   text        not null,
-  descricao   text        default '',
-  preco       numeric(10,2),
-  imagem_url  text,
-  destaque    boolean     not null default false,
-  cores       jsonb,
-  criado_em   timestamptz not null default now()
-);
+### 1. Rodar o SQL
 
-create index if not exists produtos_categoria_idx on public.produtos (categoria);
-create index if not exists produtos_ordem_idx     on public.produtos (destaque desc, criado_em asc);
+No painel do Supabase, abra **SQL Editor**, cole o conteúdo de `supabase/schema.sql` e execute. Ele cria:
 
-alter table public.produtos enable row level security;
+- a tabela `produtos`, com `preco numeric(10,2)` e `specs jsonb`;
+- travas de integridade, entre elas um `check` que só aceita as cinco modalidades de `data/categories.js` (sem isso, um erro de digitação cria um produto que nenhum filtro acha);
+- os índices que o `listProducts()` usa para ordenar;
+- o RLS com leitura pública e escrita só para quem tem login;
+- o bucket `produtos` no Storage, público para leitura.
 
--- Leitura pública: o catálogo aparece para qualquer visitante, sem login.
-create policy "produtos_select_public" on public.produtos
-  for select to anon, authenticated using (true);
+O último bloco do arquivo é uma consulta de conferência. O resultado esperado está comentado logo abaixo dela.
 
--- Escrita só para o usuário do painel.
-create policy "produtos_insert_auth" on public.produtos
-  for insert to authenticated with check (true);
+### 2. Criar o usuário do painel
 
-create policy "produtos_update_auth" on public.produtos
-  for update to authenticated using (true) with check (true);
+**Authentication > Users > Add user.** Marque **Auto Confirm User**, senão o login fica esperando uma confirmação por e-mail que nunca chega.
 
-create policy "produtos_delete_auth" on public.produtos
-  for delete to authenticated using (true);
-```
+Em seguida, **Authentication > Sign In / Providers > Email**: desligue **Allow new users to sign up**. As policies liberam escrita para qualquer usuário `authenticated`, então deixar o cadastro aberto significa deixar o catálogo aberto.
 
-`preco` é `numeric(10,2)`: duas casas fixas, até R$ 99.999.999,99. Deixar nulo faz o site mostrar "Sob consulta".
+### 3. Colar as credenciais
 
-A coluna `categoria` guarda o `id` da modalidade em slug ASCII (`futebol`, `futevolei`, `beach-tennis`, `volei`, `empresarial`), conforme `data/categories.js`.
+**Project Settings > API.** Copie o **Project URL** e a chave **anon public** para `js/supabase-config.js`.
 
-### 2. Storage: bucket público
+A chave anon é pública por design: ela vai no front-end e quem protege os dados é o RLS. **Nunca** use a `service_role` aqui, porque ela ignora o RLS e daria escrita total para qualquer visitante.
 
-```sql
-insert into storage.buckets (id, name, public)
-values ('produtos', 'produtos', true)
-on conflict (id) do nothing;
+### 4. Conferir
 
-create policy "produtos_storage_read" on storage.objects
-  for select to anon, authenticated using (bucket_id = 'produtos');
+Abra [`supabase/diagnostico.html`](supabase/diagnostico.html) no navegador. Ela roda de ponta a ponta:
 
-create policy "produtos_storage_insert" on storage.objects
-  for insert to authenticated with check (bucket_id = 'produtos');
+- credenciais preenchidas e no formato certo, e um aviso se a chave colada for a `service_role`;
+- leitura pública da tabela e presença das dez colunas;
+- **se um visitante sem login consegue escrever**, que é o teste mais importante: se passar, o RLS está aberto e qualquer pessoa pode alterar o catálogo;
+- modalidades gravadas batendo com `data/categories.js`;
+- bucket existindo, público, e as fotos já cadastradas respondendo;
+- com e-mail e senha do painel: login, cadastro, edição parcial, exclusão e upload, limpando tudo que criou.
 
-create policy "produtos_storage_update" on storage.objects
-  for update to authenticated
-  using (bucket_id = 'produtos') with check (bucket_id = 'produtos');
+A página é interna, tem `noindex` e não faz parte do site.
 
-create policy "produtos_storage_delete" on storage.objects
-  for delete to authenticated using (bucket_id = 'produtos');
-```
+### Migrar do modo local para a nuvem
 
-### 3. Authentication
-
-Crie o usuário do painel com e-mail e senha, marcando "Auto Confirm". Em seguida, desligue o cadastro público em Authentication, Providers, Email, opção "Enable signups".
-
-### 4. Credenciais
-
-Em Project Settings, API, copie o **Project URL** e a chave **anon public** para `js/supabase-config.js`.
-
-A chave anon é pública por design: quem protege os dados é o RLS. **Nunca** cole a chave `service_role` em arquivo de front-end.
-
-Não use seed automático de produtos fictícios. Cadastre os troféus reais pelo painel.
+O que estiver no `localStorage` não sobe sozinho. Se você já cadastrou troféus no modo local, cadastre de novo pelo painel depois de configurar a nuvem. É o caminho mais curto enquanto o catálogo é pequeno.
 
 ## Preço
 

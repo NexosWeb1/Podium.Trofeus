@@ -153,6 +153,19 @@ export async function addProduct(product) {
 export async function updateProduct(id, patch) {
   if (useCloud) {
     const c = await sb();
+    // Guarda a foto atual antes de sobrescrever, para poder apagá-la do
+    // Storage depois. Sem isso cada troca de imagem deixa um arquivo órfão
+    // ocupando espaço para sempre.
+    let imagemAntiga = null;
+    if (patch.image !== undefined) {
+      const { data: atual } = await c
+        .from('produtos')
+        .select('imagem_url')
+        .eq('id', id)
+        .single();
+      imagemAntiga = atual?.imagem_url || null;
+    }
+
     const { data, error } = await c
       .from('produtos')
       .update(toRow(patch))
@@ -160,6 +173,10 @@ export async function updateProduct(id, patch) {
       .select()
       .single();
     if (error) throw error;
+
+    if (imagemAntiga && imagemAntiga !== data.imagem_url) {
+      await removeStoredImage(imagemAntiga);
+    }
     return fromRow(data);
   }
   const arr = lsRead();
@@ -170,12 +187,22 @@ export async function updateProduct(id, patch) {
   return arr[i];
 }
 
-/** Remove um produto pelo id. */
+/** Remove um produto pelo id, junto com a foto dele no Storage. */
 export async function deleteProduct(id) {
   if (useCloud) {
     const c = await sb();
+    const { data: atual } = await c
+      .from('produtos')
+      .select('imagem_url')
+      .eq('id', id)
+      .single();
+
     const { error } = await c.from('produtos').delete().eq('id', id);
     if (error) throw error;
+
+    // Só depois que a linha some: se a remoção da imagem falhar, o pior
+    // caso é um arquivo órfão, e não um produto apontando para o nada.
+    if (atual?.imagem_url) await removeStoredImage(atual.imagem_url);
     return;
   }
   lsWrite(lsRead().filter((p) => p.id !== id));
@@ -240,6 +267,39 @@ export async function currentUser() {
     return data.user || null;
   }
   return sessionStorage.getItem('podium_trofeus_admin') ? { email: 'admin-local' } : null;
+}
+
+/* ---------------- Storage: limpeza ---------------- */
+
+/**
+ * Extrai o caminho dentro do bucket a partir da URL pública.
+ * Devolve null para dataURL, URL externa ou qualquer coisa que não
+ * tenha saído deste Storage: nesse caso não há o que apagar.
+ */
+function storagePathFromUrl(url) {
+  if (typeof url !== 'string') return null;
+  const marca = `/storage/v1/object/public/${IMAGE_BUCKET}/`;
+  const i = url.indexOf(marca);
+  if (i < 0) return null;
+  const path = url.slice(i + marca.length).split('?')[0];
+  try {
+    return decodeURIComponent(path) || null;
+  } catch (e) {
+    return path || null;
+  }
+}
+
+/** Apaga a imagem do Storage. Falha aqui não derruba a operação principal. */
+async function removeStoredImage(url) {
+  const path = storagePathFromUrl(url);
+  if (!path) return;
+  try {
+    const c = await sb();
+    const { error } = await c.storage.from(IMAGE_BUCKET).remove([path]);
+    if (error) throw error;
+  } catch (e) {
+    console.warn('Não foi possível remover a imagem antiga do Storage:', path, e);
+  }
 }
 
 /* ---------------- utilidades ---------------- */
