@@ -269,7 +269,11 @@
                 dica:
                   error.code === '42P01'
                     ? 'A tabela não existe. Rode o <code>supabase/schema.sql</code> no SQL Editor.'
-                    : 'Confira se a policy <code>produtos_select_public</code> foi criada.',
+                    : error.code === '42501'
+                      ? 'Falta o GRANT para o papel <code>anon</code>. Acontece quando o projeto foi ' +
+                        'criado com "Automatically expose new tables" desligado. A seção 4b do ' +
+                        '<code>supabase/schema.sql</code> resolve: rode o arquivo de novo.'
+                      : 'Confira se a policy <code>produtos_select_public</code> foi criada.',
               };
             }
             return { detalhe: `Tabela acessível. ${data.length} linha(s) na amostra.` };

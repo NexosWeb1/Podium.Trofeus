@@ -102,6 +102,23 @@ create policy "produtos_delete_auth" on public.produtos
 
 
 -- ------------------------------------------------------------
+-- 4b. Privilégios da Data API
+-- ------------------------------------------------------------
+-- RLS decide QUAIS LINHAS cada um enxerga. O GRANT decide se o papel
+-- pode tocar na tabela. São coisas diferentes e as duas precisam existir.
+--
+-- Quando "Automatically expose new tables" está DESLIGADO no projeto (que
+-- é a recomendação do próprio Supabase), uma tabela nova não recebe grant
+-- nenhum, e o site levaria "permission denied for table produtos".
+-- Os grants abaixo são explícitos, então o esquema funciona com a opção
+-- ligada ou desligada. Reaplicar não causa efeito colateral.
+grant usage on schema public to anon, authenticated;
+
+grant select on public.produtos to anon, authenticated;
+grant insert, update, delete on public.produtos to authenticated;
+
+
+-- ------------------------------------------------------------
 -- 5. Storage: bucket público das fotos
 -- ------------------------------------------------------------
 insert into storage.buckets (id, name, public)
@@ -143,9 +160,17 @@ select
   (select count(*) from pg_policies
     where schemaname = 'storage' and tablename = 'objects'
       and policyname like 'produtos_storage%')                            as policies_storage,
-  (select public from storage.buckets where id = 'produtos')              as bucket_publico;
+  (select public from storage.buckets where id = 'produtos')              as bucket_publico,
+  (select count(*) from information_schema.role_table_grants
+    where table_schema = 'public' and table_name = 'produtos'
+      and grantee = 'anon' and privilege_type = 'SELECT')                 as anon_le,
+  (select count(*) from information_schema.role_table_grants
+    where table_schema = 'public' and table_name = 'produtos'
+      and grantee = 'authenticated'
+      and privilege_type in ('INSERT', 'UPDATE', 'DELETE'))               as auth_escreve;
 -- Esperado: colunas=10, rls_ligado=true, policies_tabela=4,
---           policies_storage=4, bucket_publico=true
+--           policies_storage=4, bucket_publico=true,
+--           anon_le=1, auth_escreve=3
 
 
 -- ============================================================
