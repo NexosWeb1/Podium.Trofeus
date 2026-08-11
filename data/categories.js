@@ -16,5 +16,6 @@ export const CATEGORIES = [
   { id: 'beach-tennis', label: 'Beach Tennis' },
   { id: 'volei', label: 'Vôlei' },
   { id: 'pescaria', label: 'Pescaria' },
+  { id: 'truco', label: 'Truco' },
   { id: 'empresarial', label: 'Empresarial' },
 ];

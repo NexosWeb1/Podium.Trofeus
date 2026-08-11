@@ -27,7 +27,9 @@ function fillModalidades(select) {
 function fillModelos(select, modalidadeId) {
   select.innerHTML = '';
   const frag = document.createDocumentFragment();
-  const list = PRODUCTS.filter((p) => !modalidadeId || p.category === modalidadeId);
+  const list = PRODUCTS.filter(
+    (p) => !modalidadeId || (p.categories || [p.category]).includes(modalidadeId)
+  );
 
   const first = new Option(
     modalidadeId ? 'Selecione o modelo' : 'Escolha a modalidade antes',

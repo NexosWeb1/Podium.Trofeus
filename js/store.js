@@ -5,8 +5,12 @@
      - localStorage (navegador) como fallback, para uso/teste local.
    O resto do app (catálogo, modal, form, admin) só fala com este módulo.
    Produto (shape usado no app):
-     { id, category, name, description, price, image, featured,
-       specs, colors, hasImage }
+     { id, category, categories, name, description, price, image,
+       featured, specs, colors, hasImage }
+
+   `category` é a modalidade principal, que vira o selo sobre a foto.
+   `categories` é a lista completa que o troféu atende, e é ela que o
+   filtro do catálogo usa. A principal está sempre dentro da lista.
    ============================================================ */
 
 import { PRODUCTS as SEED } from '../data/products.js';
@@ -31,11 +35,22 @@ async function sb() {
   return _client;
 }
 
+/**
+ * Normaliza a lista de modalidades: a principal sempre entra, sem
+ * repetidas e preservando a ordem. O banco tem um gatilho fazendo o
+ * mesmo; isto cobre o modo local, onde não há banco.
+ */
+function normalizeCategories(category, categories) {
+  const lista = Array.isArray(categories) ? categories : [];
+  return [...new Set([category, ...lista].filter(Boolean))];
+}
+
 /** Converte linha do Supabase -> shape do app. */
 function fromRow(r) {
   return {
     id: r.id,
     category: r.categoria,
+    categories: normalizeCategories(r.categoria, r.categorias),
     name: r.nome,
     description: r.descricao || '',
     // O numeric do Postgres pode chegar como string, dependendo do driver.
@@ -57,6 +72,9 @@ function toRow(p) {
   const row = {};
   if (p.name !== undefined) row.nome = p.name;
   if (p.category !== undefined) row.categoria = p.category;
+  if (p.categories !== undefined || p.category !== undefined) {
+    row.categorias = normalizeCategories(p.category, p.categories);
+  }
   if (p.description !== undefined) row.descricao = p.description || '';
   if (p.price !== undefined) {
     row.preco = p.price === null || p.price === '' ? null : Number(p.price);
@@ -74,7 +92,13 @@ function lsRead() {
     const raw = localStorage.getItem(LS_KEY);
     if (raw) {
       const arr = JSON.parse(raw);
-      if (Array.isArray(arr)) return arr;
+      if (Array.isArray(arr)) {
+        // Produtos gravados antes da multi-modalidade não têm `categories`.
+        return arr.map((p) => ({
+          ...p,
+          categories: normalizeCategories(p.category, p.categories),
+        }));
+      }
     }
   } catch (e) {
     /* ignore */
@@ -141,6 +165,7 @@ export async function addProduct(product) {
   const prod = {
     ...product,
     id: product.id || uid(),
+    categories: normalizeCategories(product.category, product.categories),
     price: product.price === undefined || product.price === '' ? null : product.price,
     hasImage: !!product.image,
   };
@@ -182,7 +207,9 @@ export async function updateProduct(id, patch) {
   const arr = lsRead();
   const i = arr.findIndex((p) => p.id === id);
   if (i < 0) return null;
-  arr[i] = { ...arr[i], ...patch, id, hasImage: !!(patch.image ?? arr[i].image) };
+  const merged = { ...arr[i], ...patch, id, hasImage: !!(patch.image ?? arr[i].image) };
+  merged.categories = normalizeCategories(merged.category, merged.categories);
+  arr[i] = merged;
   lsWrite(arr);
   return arr[i];
 }

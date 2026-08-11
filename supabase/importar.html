@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>Importar catálogo | Podium Premiações</title>
+    <link rel="icon" href="../assets/favicon/favicon.ico" sizes="any" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700&family=Inter:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+
+    <link rel="stylesheet" href="../css/reset.css" />
+    <link rel="stylesheet" href="../css/tokens.css" />
+    <link rel="stylesheet" href="../css/base.css" />
+    <link rel="stylesheet" href="../css/components.css" />
+
+    <style>
+      body {
+        background: var(--bg-alt);
+        color: var(--text);
+      }
+      .imp {
+        max-width: 1000px;
+        margin-inline: auto;
+        padding: var(--sp-7) var(--gutter) var(--sp-9);
+      }
+      .imp__head {
+        border-bottom: 3px solid transparent;
+        border-image: var(--grad-podium) 1;
+        padding-bottom: var(--sp-4);
+        margin-bottom: var(--sp-5);
+      }
+      .imp h1 {
+        font-size: var(--fs-xl);
+      }
+      .imp__lead {
+        color: var(--text-muted);
+        margin-top: var(--sp-2);
+      }
+      .imp__acoes {
+        display: flex;
+        flex-wrap: wrap;
+        gap: var(--sp-3);
+        align-items: flex-end;
+        margin-bottom: var(--sp-5);
+      }
+      .imp__acoes .field {
+        flex: 1 1 200px;
+      }
+      .aviso {
+        padding: var(--sp-4);
+        border-radius: var(--r-md);
+        background: var(--wash-gold);
+        border-left: 3px solid var(--gold-cta);
+        font-size: var(--fs-sm);
+        margin-bottom: var(--sp-5);
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: var(--fs-sm);
+      }
+      th,
+      td {
+        text-align: left;
+        padding: 0.55rem 0.6rem;
+        border-bottom: 1px solid var(--border);
+        vertical-align: middle;
+      }
+      th {
+        font-family: var(--font-display);
+        font-size: var(--fs-xs);
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: var(--text-muted);
+      }
+      td.st {
+        white-space: nowrap;
+        font-weight: var(--fw-semibold);
+      }
+      .st--espera {
+        color: var(--text-muted);
+      }
+      .st--indo {
+        color: var(--sport);
+      }
+      .st--ok {
+        color: var(--success);
+      }
+      .st--pulado {
+        color: var(--gold-cta);
+      }
+      .st--erro {
+        color: var(--danger);
+      }
+      .mods {
+        color: var(--text-muted);
+      }
+      .miniatura {
+        width: 44px;
+        height: 44px;
+        object-fit: contain;
+        background: var(--paper);
+        border: 1px solid var(--border);
+        border-radius: var(--r-sm);
+      }
+      .resumo {
+        margin-top: var(--sp-5);
+        padding: var(--sp-5);
+        border-radius: var(--r-plate);
+        background: var(--surface);
+        border: 1px solid var(--border);
+        font-family: var(--font-display);
+      }
+      code {
+        font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+        font-size: 0.92em;
+        background: var(--paper-100);
+        padding: 0.1em 0.35em;
+        border-radius: 4px;
+      }
+    </style>
+  </head>
+  <body>
+    <main class="imp">
+      <div class="imp__head">
+        <span class="eyebrow">Ferramenta interna</span>
+        <h1>Importar o catálogo inicial</h1>
+        <p class="imp__lead">
+          Sobe os 31 troféus de <code>data/catalogo-inicial.js</code>, com as fotos da pasta
+          <code>Troféus/</code>. Comprime cada imagem no navegador, envia ao Storage e cria a
+          linha no banco. Esta página não faz parte do site.
+        </p>
+      </div>
+
+      <div class="aviso">
+        Rode com o site servido por HTTP (<code>python -m http.server 8000</code>), e não
+        abrindo o arquivo direto: um <code>file://</code> não consegue ler a pasta de fotos.
+        A importação <strong>pula</strong> troféus cujo nome já existe no catálogo, então
+        rodar de novo depois de um erro não duplica nada.
+      </div>
+
+      <div class="imp__acoes">
+        <div class="field">
+          <label class="field__label" for="email">E-mail do painel</label>
+          <input id="email" type="email" autocomplete="username" />
+        </div>
+        <div class="field">
+          <label class="field__label" for="senha">Senha</label>
+          <input id="senha" type="password" autocomplete="current-password" />
+        </div>
+        <button class="btn btn--outline" id="conferir" type="button">Só conferir</button>
+        <button class="btn btn--gold" id="importar" type="button">Importar</button>
+      </div>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Foto</th>
+            <th>Troféu</th>
+            <th>Modalidades</th>
+            <th>Situação</th>
+          </tr>
+        </thead>
+        <tbody id="linhas"></tbody>
+      </table>
+
+      <div class="resumo" id="resumo" hidden></div>
+    </main>
+
+    <script type="module">
+      import {
+        SUPABASE_URL,
+        SUPABASE_ANON_KEY,
+        IMAGE_BUCKET,
+        isSupabaseConfigured,
+      } from '../js/supabase-config.js';
+      import { CATEGORIES } from '../data/categories.js';
+      import { CATALOGO_INICIAL } from '../data/catalogo-inicial.js';
+      import { compressImage } from '../js/image.js';
+
+      const PASTA_FOTOS = '../Troféus/';
+      const rotulo = (id) => CATEGORIES.find((c) => c.id === id)?.label ?? id;
+
+      const tbody = document.getElementById('linhas');
+      const resumo = document.getElementById('resumo');
+      const btnImportar = document.getElementById('importar');
+      const btnConferir = document.getElementById('conferir');
+
+      // Monta a tabela uma vez; cada linha guarda a própria célula de status.
+      const linhas = CATALOGO_INICIAL.map((p) => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td><img class="miniatura" alt="" loading="lazy" /></td>
+          <td></td>
+          <td class="mods"></td>
+          <td class="st st--espera">na fila</td>`;
+        tr.querySelector('img').src = PASTA_FOTOS + encodeURIComponent(p.imagem);
+        tr.children[1].textContent = p.name;
+        tr.children[2].textContent = p.categories.map(rotulo).join(', ');
+        tbody.appendChild(tr);
+        return { produto: p, cel: tr.querySelector('.st') };
+      });
+
+      function marcar(cel, estado, texto) {
+        cel.className = 'st st--' + estado;
+        cel.textContent = texto;
+      }
+
+      /** Baixa a foto da pasta local e devolve como Blob. */
+      async function lerFoto(nomeArquivo) {
+        const r = await fetch(PASTA_FOTOS + encodeURIComponent(nomeArquivo));
+        if (!r.ok) throw new Error(`foto não encontrada (HTTP ${r.status})`);
+        return r.blob();
+      }
+
+      async function rodar({ apenasConferir }) {
+        resumo.hidden = true;
+        btnImportar.disabled = true;
+        btnConferir.disabled = true;
+
+        const conta = { ok: 0, pulado: 0, erro: 0 };
+
+        try {
+          if (!isSupabaseConfigured()) {
+            resumo.hidden = false;
+            resumo.textContent =
+              'js/supabase-config.js está vazio. Preencha as credenciais antes de importar.';
+            resumo.style.color = 'var(--danger)';
+            return;
+          }
+
+          const { createClient } = await import('https://esm.sh/@supabase/supabase-js@2.45.4');
+          const sb = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+          // Confere as fotos antes de qualquer escrita.
+          if (apenasConferir) {
+            for (const { produto, cel } of linhas) {
+              marcar(cel, 'indo', 'conferindo');
+              try {
+                const blob = await lerFoto(produto.imagem);
+                marcar(cel, 'ok', `foto ok, ${Math.round(blob.size / 1024)} KB`);
+                conta.ok += 1;
+              } catch (e) {
+                marcar(cel, 'erro', e.message);
+                conta.erro += 1;
+              }
+            }
+            return;
+          }
+
+          const email = document.getElementById('email').value.trim();
+          const senha = document.getElementById('senha').value;
+          if (!email || !senha) {
+            resumo.hidden = false;
+            resumo.textContent = 'Preencha o e-mail e a senha do painel para importar.';
+            resumo.style.color = 'var(--danger)';
+            return;
+          }
+
+          const auth = await sb.auth.signInWithPassword({ email, password: senha });
+          if (auth.error) {
+            resumo.hidden = false;
+            resumo.textContent = 'Login recusado: ' + auth.error.message;
+            resumo.style.color = 'var(--danger)';
+            return;
+          }
+
+          // Nomes que já existem, para não duplicar em uma segunda rodada.
+          const existentes = await sb.from('produtos').select('nome');
+          if (existentes.error) throw existentes.error;
+          const jaTem = new Set((existentes.data || []).map((r) => r.nome));
+
+          for (const { produto, cel } of linhas) {
+            if (jaTem.has(produto.name)) {
+              marcar(cel, 'pulado', 'já está no catálogo');
+              conta.pulado += 1;
+              continue;
+            }
+
+            try {
+              marcar(cel, 'indo', 'comprimindo');
+              const blob = await lerFoto(produto.imagem);
+              const dataUrl = await compressImage(blob);
+              const arquivo = await (await fetch(dataUrl)).blob();
+
+              marcar(cel, 'indo', 'enviando foto');
+              const caminho = `${slug(produto.name)}-${Date.now().toString(36)}.jpg`;
+              const up = await sb.storage.from(IMAGE_BUCKET).upload(caminho, arquivo, {
+                cacheControl: '3600',
+                contentType: 'image/jpeg',
+              });
+              if (up.error) throw up.error;
+
+              const { data: pub } = sb.storage.from(IMAGE_BUCKET).getPublicUrl(caminho);
+
+              marcar(cel, 'indo', 'gravando');
+              const ins = await sb.from('produtos').insert({
+                nome: produto.name,
+                categoria: produto.category,
+                categorias: produto.categories,
+                descricao: produto.description,
+                preco: null,
+                imagem_url: pub.publicUrl,
+                destaque: false,
+              });
+              if (ins.error) {
+                // A linha não entrou: tira a foto do Storage para não deixar órfã.
+                await sb.storage.from(IMAGE_BUCKET).remove([caminho]);
+                throw ins.error;
+              }
+
+              marcar(cel, 'ok', `pronto, ${Math.round(arquivo.size / 1024)} KB`);
+              conta.ok += 1;
+            } catch (e) {
+              marcar(cel, 'erro', e.message || String(e));
+              conta.erro += 1;
+            }
+          }
+
+          await sb.auth.signOut();
+        } finally {
+          btnImportar.disabled = false;
+          btnConferir.disabled = false;
+          resumo.hidden = false;
+          const partes = [`${conta.ok} ok`];
+          if (conta.pulado) partes.push(`${conta.pulado} já existiam`);
+          if (conta.erro) partes.push(`${conta.erro} com erro`);
+          resumo.textContent = partes.join(' · ');
+          resumo.style.color = conta.erro ? 'var(--danger)' : 'var(--success)';
+        }
+      }
+
+      /** Nome de arquivo em ASCII, para a URL do Storage não virar %C3%A9.
+       *  Escapes explícitos: marca combinante crua dentro da classe é
+       *  invisível no editor e some numa normalização Unicode. */
+      function slug(s) {
+        return (s || 'trofeu')
+          .toLowerCase()
+          .normalize('NFD')
+          .replace(/[\u0300-\u036f]/g, '')
+          .replace(/[^a-z0-9]+/g, '-')
+          .replace(/^-+|-+$/g, '')
+          .slice(0, 48);
+      }
+
+      btnConferir.addEventListener('click', () => rodar({ apenasConferir: true }));
+      btnImportar.addEventListener('click', () => rodar({ apenasConferir: false }));
+    </script>
+  </body>
+</html>

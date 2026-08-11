@@ -497,6 +497,18 @@
   color: var(--text-muted);
 }
 
+/* Modalidades além da principal. O selo sobre a foto mostra só uma. */
+.pmodal__tambem {
+  margin: 0;
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-medium);
+  color: var(--sport);
+}
+
+.pmodal__tambem[hidden] {
+  display: none;
+}
+
 .pmodal__desc {
   color: var(--text-muted);
   margin: 0;

@@ -366,6 +366,42 @@ body.admin {
   color: var(--text-muted);
 }
 
+/* ---------- Modalidades adicionais ---------- */
+.admin-modalidades {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-2);
+}
+
+.admin-modalidades label {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+  padding: 0.45rem 0.8rem;
+  font-size: var(--fs-sm);
+  border: 1.5px solid var(--border);
+  border-radius: var(--r-full);
+  cursor: pointer;
+  transition: border-color var(--dur-fast) var(--ease-out),
+    background var(--dur-fast) var(--ease-out), color var(--dur-fast) var(--ease-out);
+}
+
+.admin-modalidades label:hover {
+  border-color: var(--silver-deep);
+}
+
+.admin-modalidades label:has(input:checked) {
+  color: var(--sport);
+  border-color: var(--sport);
+  background: var(--sport-soft);
+}
+
+/* A principal vem do select acima: fica marcada e travada. */
+.admin-modalidades label:has(input:disabled) {
+  cursor: default;
+  opacity: 0.75;
+}
+
 /* ---------- Seletor de cores ---------- */
 .color-selected {
   display: flex;

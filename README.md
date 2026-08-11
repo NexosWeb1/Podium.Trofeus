@@ -95,6 +95,16 @@ Abra [`supabase/diagnostico.html`](supabase/diagnostico.html) no navegador. Ela 
 
 A página é interna, tem `noindex` e não faz parte do site.
 
+### Importar o catálogo inicial
+
+Os 31 troféus da primeira carga estão em `data/catalogo-inicial.js`, com as fotos em `Troféus/`. Para subir todos de uma vez, abra [`supabase/importar.html`](supabase/importar.html) com o site servido por HTTP e informe o login do painel.
+
+A página comprime cada foto no navegador, envia ao Storage, cria a linha no banco e mostra o andamento de cada item. Ela **pula** troféus cujo nome já existe, então rodar de novo depois de um erro não duplica nada. Se a linha falhar depois do upload, a foto é removida do Storage para não ficar órfã.
+
+O botão "Só conferir" valida que todas as fotos estão no lugar, sem escrever nada.
+
+Depois da importação o `catalogo-inicial.js` não é mais usado: a fonte de verdade passa a ser a tabela `produtos`, e a edição é pelo painel. Ele fica no repositório como registro do que subiu.
+
 ### Migrar do modo local para a nuvem
 
 O que estiver no `localStorage` não sobe sozinho. Se você já cadastrou troféus no modo local, cadastre de novo pelo painel depois de configurar a nuvem. É o caminho mais curto enquanto o catálogo é pequeno.

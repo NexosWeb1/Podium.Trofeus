@@ -28,6 +28,46 @@ create table if not exists public.produtos (
   criado_em   timestamptz not null default now()
 );
 
+-- `categorias` guarda TODAS as modalidades que o troféu atende; `categoria`
+-- continua sendo a principal, que é o selo mostrado sobre a foto. Vários
+-- modelos servem beach tennis e futevôlei ao mesmo tempo, e sem esta coluna
+-- eles sumiriam do filtro de uma das duas.
+alter table public.produtos add column if not exists categorias text[];
+
+-- Backfill: quem não tem a lista recebe a principal.
+update public.produtos
+   set categorias = array[categoria]
+ where categorias is null or cardinality(categorias) = 0;
+
+alter table public.produtos alter column categorias set default '{}';
+
+-- Gatilho que normaliza a lista: garante a principal dentro dela, remove
+-- repetidas e preserva a ordem. Assim um insert que mande só `categoria`
+-- (pela Table Editor, por exemplo) não esbarra na trava mais abaixo.
+create or replace function public.produtos_normaliza_categorias()
+returns trigger
+language plpgsql
+as $$
+begin
+  new.categorias := (
+    select array_agg(c order by ordem)
+      from (
+        select c, min(ord) as ordem
+          from unnest(
+                 array[new.categoria] || coalesce(new.categorias, '{}'::text[])
+               ) with ordinality as t(c, ord)
+         group by c
+      ) distintas
+  );
+  return new;
+end;
+$$;
+
+drop trigger if exists produtos_normaliza_categorias_trg on public.produtos;
+create trigger produtos_normaliza_categorias_trg
+  before insert or update on public.produtos
+  for each row execute function public.produtos_normaliza_categorias();
+
 -- `specs` existe porque o toRow() do store.js grava essa coluna quando o
 -- produto tem ficha técnica. Sem ela, um insert com specs falharia com
 -- "column specs does not exist".
@@ -54,8 +94,21 @@ comment on column public.produtos.preco is
 alter table public.produtos drop constraint if exists produtos_categoria_valida;
 alter table public.produtos add constraint produtos_categoria_valida
   check (categoria in (
-    'futebol', 'futevolei', 'beach-tennis', 'volei', 'pescaria', 'empresarial'
+    'futebol', 'futevolei', 'beach-tennis', 'volei', 'pescaria', 'truco', 'empresarial'
   ));
+
+-- Toda modalidade da lista precisa ser válida, e a principal precisa estar
+-- dentro dela. Sem a segunda parte, um troféu poderia sumir do filtro da
+-- própria modalidade que mostra no selo.
+alter table public.produtos drop constraint if exists produtos_categorias_validas;
+alter table public.produtos add constraint produtos_categorias_validas
+  check (
+    categorias is not null
+    and categorias <@ array[
+      'futebol', 'futevolei', 'beach-tennis', 'volei', 'pescaria', 'truco', 'empresarial'
+    ]::text[]
+    and categoria = any(categorias)
+  );
 
 alter table public.produtos drop constraint if exists produtos_nome_preenchido;
 alter table public.produtos add constraint produtos_nome_preenchido
@@ -72,6 +125,12 @@ alter table public.produtos add constraint produtos_preco_nao_negativo
 -- O filtro do catálogo busca por modalidade.
 create index if not exists produtos_categoria_idx
   on public.produtos (categoria);
+
+-- GIN para consultas do tipo "contém esta modalidade". O site filtra no
+-- navegador, mas o índice deixa a porta aberta para filtrar no servidor
+-- quando o catálogo crescer.
+create index if not exists produtos_categorias_idx
+  on public.produtos using gin (categorias);
 
 -- O listProducts() ordena por destaque desc, criado_em asc.
 create index if not exists produtos_ordem_idx
@@ -172,10 +231,16 @@ select
   (select count(*) from information_schema.role_table_grants
     where table_schema = 'public' and table_name = 'produtos'
       and grantee = 'authenticated'
-      and privilege_type in ('INSERT', 'UPDATE', 'DELETE'))               as auth_escreve;
--- Esperado: colunas=10, rls_ligado=true, policies_tabela=4,
+      and privilege_type in ('INSERT', 'UPDATE', 'DELETE'))               as auth_escreve,
+  (select count(*) from pg_trigger
+    where tgrelid = 'public.produtos'::regclass
+      and tgname = 'produtos_normaliza_categorias_trg')                    as gatilho,
+  (select count(*) from public.produtos
+    where categorias is null or not (categoria = any(categorias)))         as linhas_inconsistentes;
+-- Esperado: colunas=11, rls_ligado=true, policies_tabela=4,
 --           policies_storage=4, bucket_publico=true,
---           anon_le=1, auth_escreve=3
+--           anon_le=1, auth_escreve=3, gatilho=1,
+--           linhas_inconsistentes=0
 
 
 -- ============================================================

@@ -18,9 +18,16 @@ import {
   currentUser,
 } from './store.js';
 import { formatPrice, parsePriceBR, priceToInput } from './price.js';
+import { compressImage } from './image.js';
 
 const $ = (id) => document.getElementById(id);
 const catLabel = (id) => CATEGORIES.find((c) => c.id === id)?.label ?? id;
+
+/** Modalidades além da principal, para o selo do card do painel. */
+const extras = (p) => (p.categories || []).filter((c) => c !== p.category);
+const extrasSufixo = (p) => (extras(p).length ? ` +${extras(p).length}` : '');
+const extrasLabel = (p) =>
+  extras(p).length ? 'Também serve para: ' + extras(p).map(catLabel).join(', ') : '';
 /** Só é foto real se for URL http/data (evita 404 de placeholders do seed). */
 const realImg = (p) => (p.image && /^(data:|https?:)/.test(p.image) ? p.image : '');
 
@@ -29,6 +36,7 @@ let activeFilter = 'todos';
 let pendingImage = null; // dataURL da imagem nova anexada
 let deleteId = null;
 let selectedColors = []; // [{name, hex}] do produto em edição
+let selectedCategories = []; // modalidades adicionais marcadas
 
 // Null-safe: uma cor sem `hex` (jsonb editado na mao, localStorage pela
 // metade) derrubaria o painel inteiro com TypeError.
@@ -76,6 +84,37 @@ function renderColors() {
       renderColors();
     });
     pal.appendChild(b);
+  });
+}
+
+/**
+ * Modalidades que o troféu atende. A principal vem do select e entra
+ * sempre, marcada e travada: sem ela o banco recusa, porque a trava exige
+ * que a principal esteja dentro da lista.
+ */
+function renderModalidades() {
+  const box = $('pf-categorias');
+  const principal = $('pf-category').value;
+  box.innerHTML = '';
+
+  CATEGORIES.forEach((c) => {
+    const ehPrincipal = c.id === principal;
+    const label = document.createElement('label');
+    const input = document.createElement('input');
+    input.type = 'checkbox';
+    input.value = c.id;
+    input.checked = ehPrincipal || selectedCategories.includes(c.id);
+    input.disabled = ehPrincipal;
+    if (ehPrincipal) label.title = 'Modalidade principal, escolhida acima';
+    input.addEventListener('change', () => {
+      selectedCategories = input.checked
+        ? [...new Set([...selectedCategories, c.id])]
+        : selectedCategories.filter((x) => x !== c.id);
+    });
+    const span = document.createElement('span');
+    span.textContent = c.label + (ehPrincipal ? ' (principal)' : '');
+    label.append(input, span);
+    box.appendChild(label);
   });
 }
 
@@ -139,6 +178,8 @@ function fillCategorySelects() {
   });
 }
 
+$('pf-category').addEventListener('change', renderModalidades);
+
 $('admin-filter').addEventListener('change', (e) => {
   activeFilter = e.target.value;
   renderGrid();
@@ -158,7 +199,9 @@ async function reload() {
 function renderGrid() {
   const grid = $('admin-grid');
   const list =
-    activeFilter === 'todos' ? products : products.filter((p) => p.category === activeFilter);
+    activeFilter === 'todos'
+      ? products
+      : products.filter((p) => (p.categories || [p.category]).includes(activeFilter));
 
   $('admin-count').textContent = `${products.length} troféu(s) no catálogo`;
   grid.innerHTML = '';
@@ -174,7 +217,7 @@ function renderGrid() {
     card.innerHTML = `
       <div class="admin-card__media">${img}${p.featured ? '<span class="admin-card__star">Destaque</span>' : ''}</div>
       <div class="admin-card__body">
-        <span class="admin-card__cat">${catLabel(p.category)}</span>
+        <span class="admin-card__cat" title="${extrasLabel(p)}">${catLabel(p.category)}${extrasSufixo(p)}</span>
         <h3 class="admin-card__name"></h3>
         <span class="admin-card__price"></span>
         <p class="admin-card__desc"></p>
@@ -199,6 +242,9 @@ function openForm(product) {
   $('pf-id').value = editing ? product.id : '';
   $('pf-name').value = editing ? product.name : '';
   $('pf-category').value = editing ? product.category : '';
+  selectedCategories =
+    editing && Array.isArray(product.categories) ? [...product.categories] : [];
+  renderModalidades();
   $('pf-price').value = editing ? priceToInput(product.price) : '';
   $('pf-description').value = editing ? product.description || '' : '';
   $('pf-featured').checked = editing ? !!product.featured : false;
@@ -306,6 +352,7 @@ $('product-form').addEventListener('submit', async (e) => {
     const payload = {
       name,
       category,
+      categories: [...new Set([category, ...selectedCategories])],
       description,
       price,
       featured,
@@ -378,30 +425,6 @@ document.addEventListener('keydown', (e) => {
 });
 
 /* ---------------- Utilidades ---------------- */
-function compressImage(file, maxSize, quality) {
-  return new Promise((resolve, reject) => {
-    const url = URL.createObjectURL(file);
-    const img = new Image();
-    img.onload = () => {
-      URL.revokeObjectURL(url);
-      let { width, height } = img;
-      if (width > height && width > maxSize) {
-        height = Math.round((height * maxSize) / width);
-        width = maxSize;
-      } else if (height > maxSize) {
-        width = Math.round((width * maxSize) / height);
-        height = maxSize;
-      }
-      const canvas = document.createElement('canvas');
-      canvas.width = width;
-      canvas.height = height;
-      canvas.getContext('2d').drawImage(img, 0, 0, width, height);
-      resolve(canvas.toDataURL('image/jpeg', quality));
-    };
-    img.onerror = reject;
-    img.src = url;
-  });
-}
 
 let toastTimer = null;
 function toast(msg, isError = false) {

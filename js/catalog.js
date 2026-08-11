@@ -59,10 +59,13 @@ export async function initCatalog({ onQuote, onRender, scrollTo, pause, resume }
   let page = 1;
   const isMobile = () => window.matchMedia('(max-width: 640px)').matches;
 
+  // Filtra pela lista completa, e não pela modalidade principal: vários
+  // modelos servem beach tennis e futevôlei, e olhar só a principal os
+  // esconderia do filtro da outra.
   function filtered() {
     return activeCat === 'todos'
       ? products
-      : products.filter((p) => p.category === activeCat);
+      : products.filter((p) => (p.categories || [p.category]).includes(activeCat));
   }
 
   function createCard(product, index) {
@@ -99,6 +102,9 @@ export async function initCatalog({ onQuote, onRender, scrollTo, pause, resume }
       openProductModal(product, {
         onQuote,
         categoryLabel: categoryLabel(product.category),
+        otherCategoryLabels: (product.categories || [])
+          .filter((c) => c !== product.category)
+          .map(categoryLabel),
         pause,
         resume,
       })

@@ -27,6 +27,7 @@ function buildRoot() {
       <div class="pmodal__body">
         <h3 class="pmodal__title" id="pmodal-title"></h3>
         <p class="pmodal__price" id="pmodal-price"></p>
+        <p class="pmodal__tambem" id="pmodal-tambem" hidden></p>
         <p class="pmodal__desc" id="pmodal-desc"></p>
         <div class="pmodal__colors" id="pmodal-colors" hidden>
           <span class="pmodal__colors-label">Cores disponíveis</span>
@@ -147,6 +148,13 @@ export function openProductModal(product, options = {}) {
   const priceEl = root.querySelector('#pmodal-price');
   priceEl.textContent = formatPrice(product.price);
   priceEl.classList.toggle('is-muted', !hasPrice(product.price));
+
+  // Vários modelos servem mais de uma modalidade. O selo sobre a foto mostra
+  // só a principal, então as outras vêm aqui.
+  const tambem = root.querySelector('#pmodal-tambem');
+  const outras = (options.otherCategoryLabels || []).filter(Boolean);
+  tambem.hidden = outras.length === 0;
+  tambem.textContent = outras.length ? `Também serve para: ${outras.join(', ')}` : '';
 
   root.querySelector('#pmodal-desc').textContent =
     product.description || 'Troféu personalizável. Solicite um orçamento.';
