@@ -4,8 +4,6 @@
    openProductModal(product, { onQuote, categoryLabel, pause, resume })
    ============================================================ */
 
-import { formatPrice, hasPrice } from './price.js';
-
 let root = null;
 let lastFocus = null;
 let hooks = {};
@@ -26,7 +24,6 @@ function buildRoot() {
       </div>
       <div class="pmodal__body">
         <h3 class="pmodal__title" id="pmodal-title"></h3>
-        <p class="pmodal__price" id="pmodal-price"></p>
         <p class="pmodal__tambem" id="pmodal-tambem" hidden></p>
         <p class="pmodal__desc" id="pmodal-desc"></p>
         <div class="pmodal__colors" id="pmodal-colors" hidden>
@@ -144,10 +141,6 @@ export function openProductModal(product, options = {}) {
 
   root.querySelector('#pmodal-cat').textContent = options.categoryLabel || '';
   root.querySelector('#pmodal-title').textContent = product.name;
-
-  const priceEl = root.querySelector('#pmodal-price');
-  priceEl.textContent = formatPrice(product.price);
-  priceEl.classList.toggle('is-muted', !hasPrice(product.price));
 
   // Vários modelos servem mais de uma modalidade. O selo sobre a foto mostra
   // só a principal, então as outras vêm aqui.

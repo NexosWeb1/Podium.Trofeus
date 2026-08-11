@@ -99,7 +99,8 @@
 }
 
 /* Texto metálico animado (usado no hero) */
-.text-metal.text-metal--anim {
+.text-metal.text-metal--anim,
+.text-gold.text-metal--anim {
   background-size: 200% auto;
   animation: metalShine 5s linear infinite;
 }
@@ -126,6 +127,19 @@
   50% {
     transform: rotate(5deg) scale(1);
     opacity: 1;
+  }
+}
+
+/* Varredura de luz na foto do hero. Fica parada a maior parte do ciclo:
+   um brilho passando o tempo todo cansa e rouba a atenção do título. */
+@keyframes heroShine {
+  0%,
+  62% {
+    transform: translateX(-60%);
+  }
+  86%,
+  100% {
+    transform: translateX(60%);
   }
 }
 
@@ -245,15 +259,21 @@
      `.text-metal.text-metal--anim`, e um seletor de classe só perderia
      em especificidade. */
   .text-metal.text-metal--anim,
+  .text-gold.text-metal--anim,
   .marquee__track,
   .product-card,
   .pmodal__dialog,
   .pmodal__backdrop,
   .about::before,
   .about::after,
+  .hero__shine::after,
   .section-divider__glyph,
   .section-divider__ring {
     animation: none;
+  }
+
+  .hero__shine {
+    display: none;
   }
 
   /* A estrela do divisor para no estado neutro, sem o balanço. */

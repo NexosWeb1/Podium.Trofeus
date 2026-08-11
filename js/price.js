@@ -1,13 +1,20 @@
 /* ============================================================
    price.js: formatação e leitura de preço em BRL.
-   Fonte única para o catálogo, o modal e o painel.
 
-   Por que o input do painel é `text` e não `number`:
-   num teclado pt-BR, digitar "1234,56" num <input type="number">
+   NAO ESTA EM USO. O catálogo foi para "sem preço" a pedido do
+   cliente, então nem o card, nem o modal, nem o painel exibem ou
+   pedem valor. A coluna `preco` continua no banco e o store segue
+   mapeando, então religar é só voltar a importar isto.
+
+   Fica guardado por causa do que ele documenta: o parser trata a
+   ambiguidade de "1.234" (milhar pt-BR contra decimal en-US) e
+   explica por que o input tem de ser `text` e nunca `number`.
+
+   Num teclado pt-BR, digitar "1234,56" num <input type="number">
    coloca o campo em validity.badInput e `input.value` devolve string
-   vazia. O painel salvaria null sem avisar e o troféu apareceria como
-   "Sob consulta". Colar "R$ 1.200,00" da planilha falha do mesmo jeito.
-   Os dois modos de falha são silenciosos, que é o pior caso para preço.
+   vazia: o painel salvaria nulo sem avisar. Colar "R$ 1.200,00" da
+   planilha falha do mesmo jeito. Os dois modos de falha são
+   silenciosos, que é o pior caso para preço.
    ============================================================ */
 
 const BRL = new Intl.NumberFormat('pt-BR', {

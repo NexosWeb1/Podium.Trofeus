@@ -139,6 +139,19 @@
 
   --grad-bronze: linear-gradient(135deg, #e09a5e 0%, #c87137 55%, #8a4a1c 100%);
 
+  /* Ouro polido para TEXTO em fundo escuro. Todos os stops ficam claros o
+     bastante para o título do hero passar folgado: o mais escuro (#d9a62e)
+     dá 8,35:1 sobre #101317. É diferente do --grad-gold decorativo, que
+     desce até #8f6200 e reprovaria como texto. */
+  --grad-gold-text: linear-gradient(
+    102deg,
+    #f7e7bb 0%,
+    #e0b33c 30%,
+    #d9a62e 48%,
+    #f5dfa0 68%,
+    #e0b33c 100%
+  );
+
   /* Faixa de pódio: bronze, prata, ouro. Motivo da rede. */
   --grad-podium: linear-gradient(90deg, #c87137 0%, #c9d1d9 50%, #e0b33c 100%);
 
@@ -170,6 +183,11 @@
   --orb-silver: rgba(201, 209, 217, 0.55);
   --orb-silver-soft: rgba(201, 209, 217, 0.4);
   --orb-silver-faint: rgba(201, 209, 217, 0.26);
+
+  /* Halo atrás da foto do hero e a varredura de luz sobre ela. */
+  --halo-gold: rgba(224, 179, 60, 0.24);
+  --halo-silver: rgba(201, 209, 217, 0.16);
+  --shine: rgba(255, 255, 255, 0.14);
 
   /* Lavagens quentes para as faixas claras. Sem elas o miolo do site fica
      só branco e cinza, sem nada da rampa metálica da marca. */

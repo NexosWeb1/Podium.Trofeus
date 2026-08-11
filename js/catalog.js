@@ -1,6 +1,6 @@
 /* ============================================================
    catalog.js: catálogo do site (data-driven via store).
-   Card: foto + nome + preço. Clique abre o modal de detalhe.
+   Card: foto + nome. Clique abre o modal de detalhe.
    Filtro por modalidade, paginação de 8 por página no desktop
    (4 por fileira, 2 fileiras) e carrossel arrastável no celular.
    ============================================================ */
@@ -8,7 +8,6 @@
 import { CATEGORIES } from '../data/categories.js';
 import { listProducts } from './store.js';
 import { openProductModal } from './product-modal.js';
-import { formatPrice, hasPrice } from './price.js';
 
 /** Só carrega a imagem quando é URL real (evita 404 em produto sem foto). */
 function hasRealImage(product) {
@@ -88,15 +87,7 @@ export async function initCatalog({ onQuote, onRender, scrollTo, pause, resume }
 
     node.querySelector('.product-card__cat').textContent = categoryLabel(product.category);
     node.querySelector('.product-card__title').textContent = product.name;
-
-    const priceEl = node.querySelector('.product-card__price');
-    priceEl.textContent = formatPrice(product.price);
-    priceEl.classList.toggle('is-muted', !hasPrice(product.price));
-
-    node.setAttribute(
-      'aria-label',
-      `Ver detalhes de ${product.name}, ${formatPrice(product.price)}`
-    );
+    node.setAttribute('aria-label', `Ver detalhes de ${product.name}`);
 
     node.addEventListener('click', () =>
       openProductModal(product, {

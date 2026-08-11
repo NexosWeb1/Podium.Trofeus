@@ -109,11 +109,9 @@ Depois da importação o `catalogo-inicial.js` não é mais usado: a fonte de ve
 
 O que estiver no `localStorage` não sobe sozinho. Se você já cadastrou troféus no modo local, cadastre de novo pelo painel depois de configurar a nuvem. É o caminho mais curto enquanto o catálogo é pequeno.
 
-## Preço
+## Sem preço
 
-O preço é opcional em cada troféu. Vazio vira "Sob consulta" no card e no modal. Preenchido, é formatado em BRL com `Intl.NumberFormat('pt-BR')`.
-
-O campo do painel é `type="text"` de propósito, não `number`. Num teclado pt-BR, digitar `1234,56` num `input[type=number]` coloca o campo em `validity.badInput` e `value` devolve string vazia: o painel salvaria nulo sem avisar. O parser em `js/price.js` aceita `1234`, `1234,56`, `1.234,56`, `1234.56`, `1,234.56` e `R$ 1.234,56`, e devolve erro visível para entrada inválida.
+O catálogo não exibe valores. O painel não pede preço, e nem o card nem o modal mostram nada no lugar. A coluna `preco` continua no banco e o `store.js` continua mapeando, então voltar atrás é religar `js/price.js`, que está parado mas documentado.
 
 ## Fotos dos troféus
 
@@ -131,7 +129,6 @@ Nenhum seletor pode combinar `color: var(--silver)`, `var(--silver-light)` ou `v
 
 ## Pendências do cliente
 
-- **Preços dos troféus**: os 31 estão cadastrados como "Sob consulta". Preencher pelo painel, ou em lote quando a tabela chegar.
 - **Horário de atendimento**: o que está em `js/config.js` é uma suposição. Confirmar.
 
 Já resolvidos: contatos, Instagram, fotos do hero e da fachada, credenciais do Supabase e o catálogo com os 31 troféus.

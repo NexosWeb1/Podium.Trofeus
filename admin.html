@@ -148,41 +148,21 @@
           <input id="pf-name" name="name" type="text" required />
         </div>
 
-        <div class="field">
-          <label class="field__label" for="pf-category">
-            Modalidade <span class="field__req">*</span>
-          </label>
-          <select id="pf-category" name="category" required></select>
-        </div>
 
         <div class="field">
-          <span class="field__label">Também serve para</span>
+          <span class="field__label">Modalidades <span class="field__req">*</span></span>
           <div
             class="admin-modalidades"
             id="pf-categorias"
             role="group"
-            aria-label="Modalidades adicionais"
+            aria-label="Modalidades"
           ></div>
           <p class="admin-hint">
-            A modalidade principal acima já entra sozinha. Marque aqui as outras que este
-            troféu também atende, e ele passa a aparecer no filtro delas.
+            Marque uma ou mais. O troféu aparece no filtro de todas as marcadas, e a
+            primeira delas vira o selo mostrado sobre a foto no site.
           </p>
         </div>
 
-        <div class="field">
-          <label class="field__label" for="pf-price">Preço</label>
-          <input
-            id="pf-price"
-            name="price"
-            type="text"
-            inputmode="decimal"
-            autocomplete="off"
-            placeholder="Ex.: 189,90"
-          />
-          <p class="admin-hint">
-            Deixe em branco para o site mostrar "Sob consulta". Aceita 189,90 ou 1.234,56.
-          </p>
-        </div>
 
         <div class="field">
           <label class="field__label" for="pf-description">Descrição</label>

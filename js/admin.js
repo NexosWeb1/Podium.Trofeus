@@ -17,7 +17,6 @@ import {
   signOut,
   currentUser,
 } from './store.js';
-import { formatPrice, parsePriceBR, priceToInput } from './price.js';
 import { compressImage } from './image.js';
 
 const $ = (id) => document.getElementById(id);
@@ -88,34 +87,36 @@ function renderColors() {
 }
 
 /**
- * Modalidades que o troféu atende. A principal vem do select e entra
- * sempre, marcada e travada: sem ela o banco recusa, porque a trava exige
- * que a principal esteja dentro da lista.
+ * Modalidades que o troféu atende, só em caixas de seleção.
+ * A PRIMEIRA marcada, na ordem de data/categories.js, é a principal:
+ * é ela que vira o selo sobre a foto e a coluna `categoria` do banco.
  */
 function renderModalidades() {
   const box = $('pf-categorias');
-  const principal = $('pf-category').value;
   box.innerHTML = '';
 
   CATEGORIES.forEach((c) => {
-    const ehPrincipal = c.id === principal;
     const label = document.createElement('label');
     const input = document.createElement('input');
     input.type = 'checkbox';
     input.value = c.id;
-    input.checked = ehPrincipal || selectedCategories.includes(c.id);
-    input.disabled = ehPrincipal;
-    if (ehPrincipal) label.title = 'Modalidade principal, escolhida acima';
+    input.checked = selectedCategories.includes(c.id);
     input.addEventListener('change', () => {
       selectedCategories = input.checked
         ? [...new Set([...selectedCategories, c.id])]
         : selectedCategories.filter((x) => x !== c.id);
+      $('pf-error').hidden = true;
     });
     const span = document.createElement('span');
-    span.textContent = c.label + (ehPrincipal ? ' (principal)' : '');
+    span.textContent = c.label;
     label.append(input, span);
     box.appendChild(label);
   });
+}
+
+/** Principal = a primeira marcada na ordem de data/categories.js. */
+function modalidadesEscolhidas() {
+  return CATEGORIES.map((c) => c.id).filter((id) => selectedCategories.includes(id));
 }
 
 /* ---------------- Login ---------------- */
@@ -169,16 +170,9 @@ $('logout-btn').addEventListener('click', async () => {
 /* ---------------- Selects ---------------- */
 function fillCategorySelects() {
   const filter = $('admin-filter');
-  const form = $('pf-category');
   filter.length = 1; // mantém "Todas as modalidades"
-  form.innerHTML = '<option value="" disabled selected>Selecione a modalidade</option>';
-  CATEGORIES.forEach((c) => {
-    filter.appendChild(new Option(c.label, c.id));
-    form.appendChild(new Option(c.label, c.id));
-  });
+  CATEGORIES.forEach((c) => filter.appendChild(new Option(c.label, c.id)));
 }
-
-$('pf-category').addEventListener('change', renderModalidades);
 
 $('admin-filter').addEventListener('change', (e) => {
   activeFilter = e.target.value;
@@ -219,7 +213,6 @@ function renderGrid() {
       <div class="admin-card__body">
         <span class="admin-card__cat" title="${extrasLabel(p)}">${catLabel(p.category)}${extrasSufixo(p)}</span>
         <h3 class="admin-card__name"></h3>
-        <span class="admin-card__price"></span>
         <p class="admin-card__desc"></p>
       </div>
       <div class="admin-card__actions">
@@ -227,7 +220,6 @@ function renderGrid() {
         <button type="button" class="btn btn--ghost admin-card__del">Excluir</button>
       </div>`;
     card.querySelector('.admin-card__name').textContent = p.name;
-    card.querySelector('.admin-card__price').textContent = formatPrice(p.price);
     card.querySelector('.admin-card__desc').textContent = p.description || '';
     card.querySelector('.admin-card__edit').addEventListener('click', () => openForm(p));
     card.querySelector('.admin-card__del').addEventListener('click', () => askDelete(p));
@@ -241,11 +233,9 @@ function openForm(product) {
   $('pf-title').textContent = editing ? 'Editar troféu' : 'Adicionar troféu';
   $('pf-id').value = editing ? product.id : '';
   $('pf-name').value = editing ? product.name : '';
-  $('pf-category').value = editing ? product.category : '';
   selectedCategories =
     editing && Array.isArray(product.categories) ? [...product.categories] : [];
   renderModalidades();
-  $('pf-price').value = editing ? priceToInput(product.price) : '';
   $('pf-description').value = editing ? product.description || '' : '';
   $('pf-featured').checked = editing ? !!product.featured : false;
   selectedColors = editing && Array.isArray(product.colors) ? product.colors.map((c) => ({ ...c })) : [];
@@ -265,14 +255,6 @@ function openForm(product) {
 
 $('add-btn').addEventListener('click', () => openForm(null));
 
-// Ao sair do campo, reescreve no formato "R$ 1.234,56" para o operador
-// ver exatamente o que sera salvo.
-$('pf-price').addEventListener('blur', () => {
-  const el = $('pf-price');
-  if (!el.value.trim()) return;
-  const n = parsePriceBR(el.value);
-  if (n !== null) el.value = priceToInput(n);
-});
 $('pf-image-btn').addEventListener('click', () => $('pf-image').click());
 
 // Cor personalizada
@@ -314,22 +296,18 @@ $('product-form').addEventListener('submit', async (e) => {
 
   const id = $('pf-id').value;
   const name = $('pf-name').value.trim();
-  const category = $('pf-category').value;
+  const modalidades = modalidadesEscolhidas();
+  const category = modalidades[0] || '';
   const description = $('pf-description').value.trim();
   const featured = $('pf-featured').checked;
-  const priceRaw = $('pf-price').value.trim();
-  const price = parsePriceBR(priceRaw);
-
-  if (!name || !category) {
-    err.textContent = 'Preencha o nome e a modalidade.';
+  if (!name) {
+    err.textContent = 'Preencha o nome do troféu.';
     err.hidden = false;
     return;
   }
 
-  // Distingue "vazio" (= Sob consulta) de "digitou algo invalido".
-  if (priceRaw && price === null) {
-    err.textContent =
-      'Preço inválido. Use o formato 1.234,56 ou deixe em branco para "Sob consulta".';
+  if (!modalidades.length) {
+    err.textContent = 'Marque ao menos uma modalidade.';
     err.hidden = false;
     return;
   }
@@ -352,9 +330,8 @@ $('product-form').addEventListener('submit', async (e) => {
     const payload = {
       name,
       category,
-      categories: [...new Set([category, ...selectedCategories])],
+      categories: modalidades,
       description,
-      price,
       featured,
       image,
       colors: selectedColors,

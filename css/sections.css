@@ -87,10 +87,9 @@
   animation-delay: -9s;
 }
 
-/* Texto à esquerda, card do troféu à direita. O troféu ganha reflexo de
-   pedestal, que é o gesto próprio da marca. */
-/* A coluna da foto é a mais larga porque a imagem é panorâmica: os nove
-   troféus enfileirados precisam de largura para não virarem miniaturas. */
+/* Texto à esquerda, card do troféu à direita. A coluna da foto é a mais
+   larga porque a imagem é panorâmica: os nove troféus enfileirados
+   precisam de largura para não virarem miniaturas. */
 .hero__grid {
   display: grid;
   grid-template-columns: 1fr 1.1fr;
@@ -167,6 +166,25 @@
 
 .hero__stage {
   position: relative;
+  border-radius: var(--r-plate);
+  isolation: isolate;
+}
+
+/* Halo atrás da foto: descola o card do fundo escuro, que sem isto
+   deixava a imagem parecer um retângulo colado na parede. */
+.hero__stage::before {
+  content: '';
+  position: absolute;
+  z-index: -1;
+  inset: -14%;
+  background: radial-gradient(
+    62% 62% at 50% 45%,
+    var(--halo-gold) 0%,
+    var(--halo-silver) 38%,
+    transparent 72%
+  );
+  filter: blur(34px);
+  pointer-events: none;
 }
 
 .hero__stage img {
@@ -174,7 +192,45 @@
   width: 100%;
   height: auto;
   border-radius: var(--r-plate);
-  box-shadow: var(--shadow-lg);
+  border: 1px solid var(--border-dark);
+  box-shadow: var(--shadow-lg), 0 0 0 1px var(--tint-silver-10);
+}
+
+/* Fita do pódio marcando o topo do card, como nos cards do catálogo. */
+.hero__stage::after {
+  content: '';
+  position: absolute;
+  inset: 0 0 auto 0;
+  z-index: 2;
+  height: 3px;
+  border-radius: var(--r-plate) 3px 0 0;
+  background: var(--grad-podium);
+}
+
+/* Varredura de luz cruzando a foto de tempos em tempos. É o mesmo gesto
+   metálico do hover dos cards, só que sozinho, para o hero ter movimento
+   sem depender do mouse. */
+.hero__shine {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  overflow: hidden;
+  border-radius: var(--r-plate);
+  pointer-events: none;
+}
+
+.hero__shine::after {
+  content: '';
+  position: absolute;
+  inset: -30% -60%;
+  background: linear-gradient(
+    104deg,
+    transparent 42%,
+    var(--shine) 50%,
+    transparent 58%
+  );
+  transform: translateX(-60%);
+  animation: heroShine 7s var(--ease-in-out) infinite;
 }
 
 /* O reflexo de pedestal era feito em CSS enquanto a foto era placeholder.
@@ -183,6 +239,7 @@
 
 .hero__badge {
   position: absolute;
+  z-index: 3; /* acima da varredura de luz e da fita do pódio */
   bottom: -1.25rem;
   left: -1.25rem;
   display: flex;

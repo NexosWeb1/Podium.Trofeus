@@ -247,7 +247,9 @@
   width: 100%;
   height: 100%;
   object-fit: contain;
-  padding: var(--sp-4);
+  /* Topo maior para o selo da modalidade nao cair em cima do trofeu.
+     3rem = a altura do selo mais a folga de var(--sp-3). */
+  padding: 3rem var(--sp-4) var(--sp-4);
   transition: transform var(--dur-slow) var(--ease-out);
 }
 
@@ -287,20 +289,6 @@
   line-height: 1.2;
 }
 
-/* Preco do card. `.is-muted` e o estado "Sob consulta". */
-.product-card__price {
-  font-family: var(--font-display);
-  font-size: var(--fs-md);
-  font-weight: var(--fw-semibold);
-  letter-spacing: -0.01em;
-  color: var(--price);
-}
-
-.product-card__price.is-muted {
-  font-size: var(--fs-sm);
-  font-weight: var(--fw-medium);
-  color: var(--text-muted);
-}
 
 .product-card__more {
   display: inline-flex;
@@ -453,7 +441,7 @@
   width: 100%;
   height: 100%;
   object-fit: contain;
-  padding: var(--sp-5);
+  padding: 3.25rem var(--sp-5) var(--sp-5);
 }
 
 .pmodal__cat {
@@ -483,19 +471,6 @@
   font-size: var(--fs-xl);
 }
 
-.pmodal__price {
-  font-family: var(--font-display);
-  font-size: var(--fs-lg);
-  font-weight: var(--fw-semibold);
-  color: var(--price);
-  margin: 0;
-}
-
-.pmodal__price.is-muted {
-  font-size: var(--fs-md);
-  font-weight: var(--fw-medium);
-  color: var(--text-muted);
-}
 
 /* Modalidades além da principal. O selo sobre a foto mostra só uma. */
 .pmodal__tambem {
@@ -664,7 +639,14 @@
   color: var(--sport);
 }
 
-.field input,
+/* Checkbox e radio não são caixas de texto: com width 100% e min-height
+   48px eles viravam um quadradão, e o estrago só aparecia quando o rótulo
+   ao lado quebrava em duas linhas.
+   O `:not()` vai dentro de um `:where()` porque `:where()` tem
+   especificidade zero. Sem ele o seletor subiria de 0,1,1 para 0,3,1 e
+   passaria na frente de `.color-custom input[type='color']`, esticando o
+   seletor de cor do painel. */
+.field input:where(:not([type='checkbox']):not([type='radio'])),
 .field select,
 .field textarea {
   width: 100%;
@@ -684,7 +666,7 @@
   resize: vertical;
 }
 
-.field input:focus,
+.field input:where(:not([type='checkbox']):not([type='radio'])):focus,
 .field select:focus,
 .field textarea:focus {
   outline: none;
@@ -692,7 +674,7 @@
   box-shadow: var(--focus-shadow);
 }
 
-.field input:user-invalid,
+.field input:where(:not([type='checkbox']):not([type='radio'])):user-invalid,
 .field select:user-invalid,
 .field textarea:user-invalid {
   border-color: var(--danger);

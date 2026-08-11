@@ -135,6 +135,15 @@ strong {
   color: transparent;
 }
 
+/* Ouro polido. Usado na palavra de destaque do h1 do hero: em cromo ela
+   ficava cinza ao lado do branco da linha de cima, sem virar foco. */
+.text-gold {
+  background: var(--grad-gold-text);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
 /* ---- Utilities ---- */
 .visually-hidden {
   position: absolute;
