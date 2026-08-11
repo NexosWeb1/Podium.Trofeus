@@ -100,7 +100,7 @@
 
 /* Texto metálico animado (usado no hero) */
 .text-metal.text-metal--anim,
-.text-gold.text-metal--anim {
+.text-podium.text-metal--anim {
   background-size: 200% auto;
   animation: metalShine 5s linear infinite;
 }
@@ -259,7 +259,7 @@
      `.text-metal.text-metal--anim`, e um seletor de classe só perderia
      em especificidade. */
   .text-metal.text-metal--anim,
-  .text-gold.text-metal--anim,
+  .text-podium.text-metal--anim,
   .marquee__track,
   .product-card,
   .pmodal__dialog,
@@ -272,7 +272,9 @@
     animation: none;
   }
 
-  .hero__shine {
+  /* Só a varredura para. O wrapper fica, porque é ele que desenha a
+     fita do pódio no topo da foto. */
+  .hero__shine::after {
     display: none;
   }
 

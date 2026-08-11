@@ -135,10 +135,11 @@ strong {
   color: transparent;
 }
 
-/* Ouro polido. Usado na palavra de destaque do h1 do hero: em cromo ela
-   ficava cinza ao lado do branco da linha de cima, sem virar foco. */
-.text-gold {
-  background: var(--grad-gold-text);
+/* A rampa do pódio recortada no texto. Usada na palavra de destaque do h1
+   do hero: em cromo ela ficava cinza ao lado do branco da linha de cima,
+   e em ouro sólido repetiria a assinatura da Podium Brindes. */
+.text-podium {
+  background: var(--grad-podium-text);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;

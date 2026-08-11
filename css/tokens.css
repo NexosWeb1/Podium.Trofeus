@@ -139,17 +139,23 @@
 
   --grad-bronze: linear-gradient(135deg, #e09a5e 0%, #c87137 55%, #8a4a1c 100%);
 
-  /* Ouro polido para TEXTO em fundo escuro. Todos os stops ficam claros o
-     bastante para o título do hero passar folgado: o mais escuro (#d9a62e)
-     dá 8,35:1 sobre #101317. É diferente do --grad-gold decorativo, que
-     desce até #8f6200 e reprovaria como texto. */
-  --grad-gold-text: linear-gradient(
-    102deg,
-    #f7e7bb 0%,
-    #e0b33c 30%,
-    #d9a62e 48%,
-    #f5dfa0 68%,
-    #e0b33c 100%
+  /* Rampa do pódio recortada em TEXTO, para a palavra de destaque do h1.
+     Ouro sozinho no texto é a assinatura da Podium Brindes; aqui a palavra
+     percorre os três metais, que é o motivo próprio desta marca.
+     Todos os stops passam folgado sobre o grafite do hero:
+     #e09a5e = 7,94:1 · #c9d1d9 = 12,07:1 · #e0b33c = 9,47:1 · #f5dfa0 = 14,4:1
+     Repare que é o bronze CLARO: o --bronze normal daria 5,21:1, que passa
+     como texto grande mas some no meio dos outros dois. */
+  --grad-podium-text: linear-gradient(
+    100deg,
+    #e09a5e 0%,
+    #f0cba4 17%,
+    #dde4ea 32%,
+    #ffffff 44%,
+    #f7e7bb 58%,
+    #e6bc4c 76%,
+    #e0b33c 90%,
+    #edc39a 100%
   );
 
   /* Faixa de pódio: bronze, prata, ouro. Motivo da rede. */

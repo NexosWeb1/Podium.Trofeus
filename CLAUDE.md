@@ -54,17 +54,19 @@ Empresa irmã da **Podium Brindes** (`../Podium Brindes/`), de onde vem a arquit
 - **`.about` e `.hero` são escuros por regra própria, sem a classe `.section--dark`.** Toda regra de contexto escuro precisa listar os três, senão um token de fundo claro (`--accent`, `--gold-cta`) vaza para cima do grafite e reprova contraste. Já aconteceu com `.eyebrow` e com `.link-arrow`.
 - **`.field input` não pode pegar checkbox nem radio.** Com `width: 100%` e `min-height: 48px` eles viram um quadradão, e o estrago só aparece quando o rótulo ao lado quebra em duas linhas. A exclusão vai dentro de `:where()`, que tem especificidade zero: sem isso o seletor sobe de 0,1,1 para 0,3,1 e passa na frente de `.color-custom input[type=color]`.
 - **A foto do card tem `padding-top: 3rem`** para o selo da modalidade não cair em cima do troféu. Se o selo mudar de tamanho, o padding acompanha.
+- **Ouro sólido no texto é a assinatura da Podium Brindes.** A palavra de destaque do h1 usa a rampa do pódio inteira (`--grad-podium-text`), não ouro puro. Já foi cromo, e nesse tom ela sumia ao lado do branco da linha de cima.
+- **A fita do topo da foto do hero mora no `.hero__shine`**, e não no `.hero__stage`. O shine tem `overflow: hidden` e o mesmo raio da foto; no stage, que não recorta, as pontas da barra sobravam para fora do canto arredondado. Por isso o `prefers-reduced-motion` esconde só o `::after` do shine, nunca o elemento.
 - A barra de filtros do catálogo é `sticky` e opaca, então rola por cima do conteúdo. As lavagens coloridas da seção começam **abaixo** dela de propósito; se subirem, aparece um retângulo branco deslizando.
 
 ## Como a cor entra
 
 Três papéis, e cada cor só faz o seu. Manter essa divisão ao adicionar componente novo.
 
-**Fita do pódio** (`--grad-podium`: bronze, prata, ouro) é a **assinatura**. Aparece antes de cada `.eyebrow`, no sublinhado do nav, embaixo da barra de filtros, no topo do card em hover, na linha de progresso do "Como Funciona", no topo do formulário e fechando o rodapé. Vem direto da rampa que está na logo.
+**Fita do pódio** (`--grad-podium`: bronze, prata, ouro) é a **assinatura**. Aparece antes de cada `.eyebrow`, no sublinhado do nav, embaixo da barra de filtros, no topo do card em hover, recortada na palavra de destaque do h1 do hero (classe `.text-podium`), no topo da foto do hero, na linha de progresso do "Como Funciona", no topo do formulário e fechando o rodapé. Vem direto da rampa que está na logo.
 
 **Azul** (`--sport`) é **interação**: link, foco, chip de modalidade ativo, página atual do paginador, "Ver detalhes" do card, asterisco de campo obrigatório, numerais acesos do "Como Funciona", hover do botão de contorno. Em fundo escuro usa `--sport-bright` (o `--sport` daria 1,9:1).
 
-**Ouro** é **valor**: botão de CTA, a palavra de destaque do h1 do hero (classe `.text-gold`, com `--grad-gold-text`, cuja faixa é clara o bastante para o stop mais escuro dar 8,35:1 sobre o grafite), selo da modalidade sobre a foto, estrela do divisor, rótulos de seção e títulos do rodapé. Em fundo claro sempre `--gold-cta` (5:1); em fundo escuro sempre `--gold` (9,47:1).
+**Ouro** é **valor**: botão de CTA, selo da modalidade sobre a foto, estrela do divisor, rótulos de seção e títulos do rodapé. Em fundo claro sempre `--gold-cta` (5:1); em fundo escuro sempre `--gold` (9,47:1).
 
 Duas exceções deliberadas ao azul, para o metal aparecer onde a marca pede:
 - **Links do rodapé** vão de `--bronze` (5,60:1 sobre `--graphite-950`), com `--bronze-light` no hover. É o terceiro metal da rampa, que só apareceria em gradiente.
