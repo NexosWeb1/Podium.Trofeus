@@ -44,3 +44,12 @@ js/supabase-config.local.js
 # Briefing interno da agencia (nao publicar em repo publico)
 escopo do projeto/
 Escopo*.pdf
+
+# Material bruto do cliente. Sao 14 MB de foto em alta que o site nao le em
+# momento nenhum: as derivadas ja versionadas vivem em assets/img/, e as fotos
+# dos trofeus ja estao no Storage do Supabase. Ficam so na maquina.
+# Se precisar rodar supabase/importar.html de novo, restaure Trofeus/ do
+# arquivo do cliente antes.
+Img/
+Troféus/
+Trofeus/

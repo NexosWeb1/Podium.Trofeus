@@ -23,8 +23,9 @@ supabase/             schema.sql · diagnostico.html
 scripts/              git-auth.ps1 · git-auth.sh
 assets/img/           hero · about · logo · og
 assets/favicon/       favicon.ico · apple-touch-icon · icon-192 · icon-512
-Img/                  arquivos originais do cliente (não são usados pelo site)
 ```
+
+Duas pastas de imagem existem na máquina mas **não** vão para o repositório, e estão no `.gitignore`: `Img/` (logos e fotos originais do cliente, das quais saíram as derivadas de `assets/img/`) e `Troféus/` (as 31 fotos que já subiram para o Storage do Supabase). Juntas são 14 MB que o site não lê em momento nenhum. Quem clonar não precisa delas para rodar o site; precisa só para rodar `supabase/importar.html` de novo, e nesse caso restaura `Troféus/` do arquivo do cliente.
 
 A ordem dos `<link>` de CSS importa: `tokens` define as variáveis que todos os outros consomem.
 
@@ -97,7 +98,9 @@ A página é interna, tem `noindex` e não faz parte do site.
 
 ### Importar o catálogo inicial
 
-Os 31 troféus da primeira carga estão em `data/catalogo-inicial.js`, com as fotos em `Troféus/`. Para subir todos de uma vez, abra [`supabase/importar.html`](supabase/importar.html) com o site servido por HTTP e informe o login do painel.
+Já foi feita: os 31 troféus estão no banco e a edição daqui em diante é pelo painel. O que segue é o registro de como rodou, caso precise repetir.
+
+Os 31 troféus da primeira carga estão em `data/catalogo-inicial.js`, com as fotos em `Troféus/` — pasta que fica fora do repositório e precisa ser restaurada do arquivo do cliente antes de rodar. Para subir todos de uma vez, abra [`supabase/importar.html`](supabase/importar.html) com o site servido por HTTP e informe o login do painel.
 
 A página comprime cada foto no navegador, envia ao Storage, cria a linha no banco e mostra o andamento de cada item. Ela **pula** troféus cujo nome já existe, então rodar de novo depois de um erro não duplica nada. Se a linha falhar depois do upload, a foto é removida do Storage para não ficar órfã.
 
