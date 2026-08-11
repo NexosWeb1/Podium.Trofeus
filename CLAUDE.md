@@ -47,7 +47,8 @@ Empresa irmã da **Podium Brindes** (`../Podium Brindes/`), de onde vem a arquit
 - `new Date('2026-08-03').toLocaleDateString('pt-BR')` devolve o **dia anterior** em UTC-3, porque ISO só com data parseia como meia-noite UTC. O `formatDateBR` em `js/form.js` faz regex na string, sem `new Date`.
 - `toRow()` em `js/store.js` omite chaves `undefined`. Sem isso, um `updateProduct(id, { featured: true })` apagaria nome, categoria e preço.
 - `lsWrite()` tem guarda de quota: no modo local as fotos são dataURL base64 na mesma chave, e o teto de ~5 MB chega rápido.
-- O marquee repete a lista até ter 12 itens antes de duplicar. Com só 5 modalidades, a metade não preenchia telas largas e aparecia um vão.
+- O marquee repete a lista até ter 12 itens antes de duplicar. Com meia dúzia de modalidades, a metade não preenchia telas largas e aparecia um vão.
+- **Acrescentar modalidade mexe em dois lugares:** o objeto em `data/categories.js` e o `check` de `supabase/schema.sql`, que precisa ser re-rodado no SQL Editor. Só o primeiro e o cadastro é recusado pelo banco com "violates check constraint". O número no hero e a contagem nos testes derivam da lista, então esses não precisam de ajuste.
 - `.admin-card__media img` usa `contain`, não `cover`: troféu é alto e estreito e o `cover` cortava a taça.
 - **`.about` e `.hero` são escuros por regra própria, sem a classe `.section--dark`.** Toda regra de contexto escuro precisa listar os três, senão um token de fundo claro (`--accent`, `--gold-cta`) vaza para cima do grafite e reprova contraste. Já aconteceu com `.eyebrow` e com `.link-arrow`.
 - A barra de filtros do catálogo é `sticky` e opaca, então rola por cima do conteúdo. As lavagens coloridas da seção começam **abaixo** dela de propósito; se subirem, aparece um retângulo branco deslizando.

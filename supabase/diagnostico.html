@@ -160,6 +160,8 @@
         IMAGE_BUCKET,
         isSupabaseConfigured,
       } from '../js/supabase-config.js';
+      // Mesma fonte que o site usa, para as duas listas não divergirem.
+      import { CATEGORIES } from '../data/categories.js';
 
       const lista = document.getElementById('lista');
       const resumo = document.getElementById('resumo');
@@ -169,7 +171,7 @@
         'id', 'nome', 'categoria', 'descricao', 'preco',
         'imagem_url', 'destaque', 'cores', 'specs', 'criado_em',
       ];
-      const MODALIDADES = ['futebol', 'futevolei', 'beach-tennis', 'volei', 'empresarial'];
+      const MODALIDADES = CATEGORIES.map((c) => c.id);
 
       let contagem = { ok: 0, erro: 0, alerta: 0 };
 

@@ -38,7 +38,7 @@ alter table public.produtos add column if not exists specs jsonb;
 
 comment on table  public.produtos is 'Catálogo de troféus do site.';
 comment on column public.produtos.categoria is
-  'Slug da modalidade, igual ao id em data/categories.js: futebol, futevolei, beach-tennis, volei, empresarial.';
+  'Slug da modalidade, igual ao id em data/categories.js: futebol, futevolei, beach-tennis, volei, pescaria, empresarial.';
 comment on column public.produtos.preco is
   'Nulo faz o site mostrar "Sob consulta".';
 
@@ -48,9 +48,14 @@ comment on column public.produtos.preco is
 -- ------------------------------------------------------------
 -- A modalidade precisa casar com data/categories.js. Sem esta trava, um
 -- erro de digitação no cadastro cria um produto que nenhum filtro acha.
+-- Ao acrescentar uma modalidade em data/categories.js, acrescente aqui e
+-- RODE ESTE ARQUIVO DE NOVO. Sem isso o cadastro da modalidade nova é
+-- recusado pelo banco com "violates check constraint".
 alter table public.produtos drop constraint if exists produtos_categoria_valida;
 alter table public.produtos add constraint produtos_categoria_valida
-  check (categoria in ('futebol', 'futevolei', 'beach-tennis', 'volei', 'empresarial'));
+  check (categoria in (
+    'futebol', 'futevolei', 'beach-tennis', 'volei', 'pescaria', 'empresarial'
+  ));
 
 alter table public.produtos drop constraint if exists produtos_nome_preenchido;
 alter table public.produtos add constraint produtos_nome_preenchido

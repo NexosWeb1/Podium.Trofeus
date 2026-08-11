@@ -63,7 +63,7 @@ Todo o esquema mora em [`supabase/schema.sql`](supabase/schema.sql), num arquivo
 No painel do Supabase, abra **SQL Editor**, cole o conteúdo de `supabase/schema.sql` e execute. Ele cria:
 
 - a tabela `produtos`, com `preco numeric(10,2)` e `specs jsonb`;
-- travas de integridade, entre elas um `check` que só aceita as cinco modalidades de `data/categories.js` (sem isso, um erro de digitação cria um produto que nenhum filtro acha);
+- travas de integridade, entre elas um `check` que só aceita as modalidades de `data/categories.js` (sem isso, um erro de digitação cria um produto que nenhum filtro acha);
 - os índices que o `listProducts()` usa para ordenar;
 - o RLS com leitura pública e escrita só para quem tem login;
 - o bucket `produtos` no Storage, público para leitura.
