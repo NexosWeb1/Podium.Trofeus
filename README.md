@@ -131,14 +131,12 @@ Nenhum seletor pode combinar `color: var(--silver)`, `var(--silver-light)` ou `v
 
 ## Pendências do cliente
 
-Enquanto não chegarem, o site funciona com placeholders marcados.
+- **Preços dos troféus**: os 31 estão cadastrados como "Sob consulta". Preencher pelo painel, ou em lote quando a tabela chegar.
+- **Horário de atendimento**: o que está em `js/config.js` é uma suposição. Confirmar.
 
-- **Contatos** (`js/config.js`, todos vazios): WhatsApp em E.164, telefone de exibição, e-mail, Instagram, endereço e horário. Linhas vazias somem do rodapé em vez de aparecer em branco.
-- **Foto do hero** (`assets/img/hero/trofeus-hero.jpg`, 1200x900): vários modelos de troféu. Hoje é um placeholder.
-- **Foto institucional** (`assets/img/about/producao-podium.jpg`, 1200x1200): produção ou equipe. Hoje é um placeholder.
-- **Imagem de compartilhamento** (`assets/img/og/podium-og.jpg`, 1200x630): hoje é só a logomarca.
-- **Fotos, descrições e preços dos troféus**: cadastrar pelo painel.
-- **Credenciais do Supabase**: seguir os passos acima.
+Já resolvidos: contatos, Instagram, fotos do hero e da fachada, credenciais do Supabase e o catálogo com os 31 troféus.
+
+Campo de contato vazio some do rodapé em vez de aparecer em branco, então dá para esvaziar qualquer um em `js/config.js` sem quebrar o layout.
 
 ## Publicar no GitHub
 

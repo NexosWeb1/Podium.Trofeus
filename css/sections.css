@@ -323,10 +323,11 @@
   aspect-ratio: 16 / 9;
 }
 
-/* Desktop: imagem do sobre em formato quadrado (maior) */
+/* Desktop: 4:3, a proporção da foto da fachada. O 1:1 anterior existia
+   para o placeholder quadrado e cortaria o final do wordmark. */
 @media (min-width: 901px) {
   .about__media {
-    aspect-ratio: 1 / 1;
+    aspect-ratio: 4 / 3;
   }
 }
 
