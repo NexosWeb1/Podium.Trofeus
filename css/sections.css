@@ -89,11 +89,13 @@
 
 /* Texto à esquerda, card do troféu à direita. O troféu ganha reflexo de
    pedestal, que é o gesto próprio da marca. */
+/* A coluna da foto é a mais larga porque a imagem é panorâmica: os nove
+   troféus enfileirados precisam de largura para não virarem miniaturas. */
 .hero__grid {
   display: grid;
-  grid-template-columns: 1.05fr 0.95fr;
+  grid-template-columns: 1fr 1.1fr;
   align-items: center;
-  gap: clamp(2.5rem, 6vw, 6rem);
+  gap: clamp(2.5rem, 5vw, 4.5rem);
   width: 100%;
 }
 
@@ -157,7 +159,7 @@
 
 .hero__visual {
   position: relative;
-  width: min(460px, 100%);
+  width: min(640px, 100%);
   margin-inline: auto;
   animation: floatY 7s ease-in-out infinite;
   will-change: transform;
@@ -175,25 +177,9 @@
   box-shadow: var(--shadow-lg);
 }
 
-/* Reflexo de pedestal: a mesma imagem espelhada e esmaecida, recortada
-   numa faixa curta para não dobrar a altura do card. `object-position:
-   bottom` pega a base da foto, que depois do scaleY(-1) encosta na base
-   da imagem original. */
-.hero__reflection {
-  display: block;
-  width: 100%;
-  height: clamp(60px, 9vw, 110px);
-  object-fit: cover;
-  object-position: bottom;
-  margin-top: 2px;
-  transform: scaleY(-1);
-  opacity: 0.24;
-  border-radius: var(--r-plate);
-  box-shadow: none;
-  mask-image: linear-gradient(to bottom, #000 0%, transparent 92%);
-  -webkit-mask-image: linear-gradient(to bottom, #000 0%, transparent 92%);
-  pointer-events: none;
-}
+/* O reflexo de pedestal era feito em CSS enquanto a foto era placeholder.
+   A foto real já traz o reflexo dos troféus na bancada metálica, então
+   espelhar de novo seria reflexo de reflexo. */
 
 .hero__badge {
   position: absolute;
