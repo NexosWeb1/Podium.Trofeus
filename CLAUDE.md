@@ -58,13 +58,14 @@ Empresa irmã da **Podium Brindes** (`../Podium Brindes/`), de onde vem a arquit
 - **A fita do topo da foto do hero mora no `.hero__shine`**, e não no `.hero__stage`. O shine tem `overflow: hidden` e o mesmo raio da foto; no stage, que não recorta, as pontas da barra sobravam para fora do canto arredondado. Por isso o `prefers-reduced-motion` esconde só o `::after` do shine, nunca o elemento.
 - **O hero não é `min-height: 100dvh` abaixo de 900px.** Empilhado, o conteúdo passa da altura da tela, e com `align-items: center` o excedente vaza pelos dois lados igualmente, comendo o `padding-top` que segura a foto embaixo do header fixo. No empilhado a altura mínima sai e o espaço vira padding de verdade.
 - **A seção depois do `.section-divider` tem `padding-top: 0`.** O padding do divisor é a pausa inteira entre as duas seções, os dois lados dela. Somar o `--section-y` do catálogo em cima disso punha a estrela com o triplo de espaço embaixo do que em cima.
+- **Rótulo centrado precisa de compensação.** O traço do pódio é item do flex do `.eyebrow` e entra na largura da caixa: centrar a caixa deixa o texto meio traço à direita do eixo. O `.section-head--center .eyebrow` leva um `padding-inline-end` do tamanho do traço mais o gap, medido pela variável `--eyebrow-tick` para os dois não desencontrarem.
 - A barra de filtros do catálogo é `sticky` e opaca, então rola por cima do conteúdo. As lavagens coloridas da seção começam **abaixo** dela de propósito; se subirem, aparece um retângulo branco deslizando.
 
 ## Como a cor entra
 
 Três papéis, e cada cor só faz o seu. Manter essa divisão ao adicionar componente novo.
 
-**Fita do pódio** (`--grad-podium`: bronze, prata, ouro) é a **assinatura**. Aparece antes de cada `.eyebrow`, no sublinhado do nav, embaixo da barra de filtros, no topo do card em hover, recortada na palavra de destaque do h1 do hero (classe `.text-podium`), no topo da foto do hero, na linha de progresso do "Como Funciona", no topo do formulário e fechando o rodapé. Vem direto da rampa que está na logo.
+**Fita do pódio** (`--grad-podium`: bronze, prata, ouro) é a **assinatura**. Aparece antes de cada `.eyebrow` (menos o do hero abaixo de 900px, onde o rótulo centra e o traço ficaria sobrando ao lado da primeira linha), no sublinhado do nav, embaixo da barra de filtros, no topo do card em hover, recortada na palavra de destaque do h1 do hero (classe `.text-podium`), no topo da foto do hero, na linha de progresso do "Como Funciona", no topo do formulário e fechando o rodapé. Vem direto da rampa que está na logo.
 
 **Azul** (`--sport`) é **interação**: link, foco, chip de modalidade ativo, página atual do paginador, "Ver detalhes" do card, asterisco de campo obrigatório, numerais acesos do "Como Funciona", hover do botão de contorno. Em fundo escuro usa `--sport-bright` (o `--sport` daria 1,9:1).
 

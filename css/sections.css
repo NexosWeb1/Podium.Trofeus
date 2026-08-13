@@ -826,6 +826,14 @@
     text-align: center;
   }
 
+  /* O traço do pódio sai do rótulo do hero no empilhado. Aqui ele quebra em
+     duas linhas e o traço fica sobrando ao lado da primeira, sem ancorar em
+     nada, e ainda empurra o texto para fora do eixo da tela. A assinatura
+     continua no divisor, no nav, nos cards e nos outros rótulos. */
+  .hero .eyebrow::before {
+    display: none;
+  }
+
   .hero__visual {
     order: -1;
   }

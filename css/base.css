@@ -68,6 +68,9 @@ strong {
 
 /* ---- Eyebrow / kicker ---- */
 .eyebrow {
+  /* Fica numa variável porque a compensação de centralização mais abaixo
+     precisa saber a largura exata do traço. */
+  --eyebrow-tick: 30px;
   display: inline-flex;
   align-items: center;
   gap: var(--sp-3);
@@ -85,10 +88,18 @@ strong {
 .eyebrow::before {
   content: '';
   flex: 0 0 auto;
-  width: 30px;
+  width: var(--eyebrow-tick);
   height: 3px;
   border-radius: 2px;
   background: var(--grad-podium);
+}
+
+/* Num rótulo centrado, o traço é item do flex e entra na conta da largura:
+   a caixa fica centrada, mas o texto sai deslocado meio traço para a
+   direita do eixo da tela. Um vazio do mesmo tamanho do outro lado devolve
+   o texto ao meio, sem tirar a assinatura da marca de onde ela cabe. */
+.section-head--center .eyebrow {
+  padding-inline-end: calc(var(--eyebrow-tick) + var(--sp-3));
 }
 
 /* Em faixa escura o ouro pode ser o metálico cheio (9,47:1 em #101317).
