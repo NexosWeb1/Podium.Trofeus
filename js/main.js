@@ -96,16 +96,8 @@ function hydrateContactLinks() {
   }
 }
 
-/** O número de modalidades do hero sai da lista, e não escrito na mão:
- *  assim ele não desatualiza quando uma modalidade é acrescentada. */
-function hydrateStats() {
-  const el = document.getElementById('hero-modalidades');
-  if (el) el.textContent = String(CATEGORIES.length);
-}
-
 async function main() {
   hydrateContactLinks();
-  hydrateStats();
   buildMarquee();
 
   const scroll = initSmoothScroll();

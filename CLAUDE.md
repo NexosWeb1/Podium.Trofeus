@@ -48,7 +48,7 @@ Empresa irmã da **Podium Brindes** (`../Podium Brindes/`), de onde vem a arquit
 - `toRow()` em `js/store.js` omite chaves `undefined`. Sem isso, um `updateProduct(id, { featured: true })` apagaria nome, categoria e a lista de modalidades.
 - `lsWrite()` tem guarda de quota: no modo local as fotos são dataURL base64 na mesma chave, e o teto de ~5 MB chega rápido.
 - O marquee repete a lista até ter 12 itens antes de duplicar. Com meia dúzia de modalidades, a metade não preenchia telas largas e aparecia um vão.
-- **Acrescentar modalidade mexe em dois lugares:** o objeto em `data/categories.js` e os dois `check` de `supabase/schema.sql`, que precisam ser re-rodados no SQL Editor. Só o primeiro e o cadastro é recusado pelo banco com "violates check constraint". O número no hero e a contagem nos testes derivam da lista, então esses não precisam de ajuste.
+- **Acrescentar modalidade mexe em dois lugares:** o objeto em `data/categories.js` e os dois `check` de `supabase/schema.sql`, que precisam ser re-rodados no SQL Editor. Só o primeiro e o cadastro é recusado pelo banco com "violates check constraint". A contagem nos testes deriva da lista, então essa não precisa de ajuste.
 - **Um troféu tem uma modalidade principal e uma lista.** `categoria` é a principal, e é ela que vira o selo sobre a foto. `categorias` é a lista completa, e é ela que todo filtro usa (catálogo, formulário e painel). A principal está sempre dentro da lista: o banco garante por gatilho, o `store.js` garante por `normalizeCategories`, e há uma trava conferindo. Filtrar por `categoria` esconderia um troféu de beach tennis que também serve futevôlei.
 - `.admin-card__media img` usa `contain`, não `cover`: troféu é alto e estreito e o `cover` cortava a taça.
 - **`.about` e `.hero` são escuros por regra própria, sem a classe `.section--dark`.** Toda regra de contexto escuro precisa listar os três, senão um token de fundo claro (`--accent`, `--gold-cta`) vaza para cima do grafite e reprova contraste. Já aconteceu com `.eyebrow` e com `.link-arrow`.
@@ -56,6 +56,8 @@ Empresa irmã da **Podium Brindes** (`../Podium Brindes/`), de onde vem a arquit
 - **A foto do card tem `padding-top: 3rem`** para o selo da modalidade não cair em cima do troféu. Se o selo mudar de tamanho, o padding acompanha.
 - **Ouro sólido no texto é a assinatura da Podium Brindes.** A palavra de destaque do h1 usa a rampa do pódio inteira (`--grad-podium-text`), não ouro puro. Já foi cromo, e nesse tom ela sumia ao lado do branco da linha de cima.
 - **A fita do topo da foto do hero mora no `.hero__shine`**, e não no `.hero__stage`. O shine tem `overflow: hidden` e o mesmo raio da foto; no stage, que não recorta, as pontas da barra sobravam para fora do canto arredondado. Por isso o `prefers-reduced-motion` esconde só o `::after` do shine, nunca o elemento.
+- **O hero não é `min-height: 100dvh` abaixo de 900px.** Empilhado, o conteúdo passa da altura da tela, e com `align-items: center` o excedente vaza pelos dois lados igualmente, comendo o `padding-top` que segura a foto embaixo do header fixo. No empilhado a altura mínima sai e o espaço vira padding de verdade.
+- **A seção depois do `.section-divider` tem `padding-top: 0`.** O padding do divisor é a pausa inteira entre as duas seções, os dois lados dela. Somar o `--section-y` do catálogo em cima disso punha a estrela com o triplo de espaço embaixo do que em cima.
 - A barra de filtros do catálogo é `sticky` e opaca, então rola por cima do conteúdo. As lavagens coloridas da seção começam **abaixo** dela de propósito; se subirem, aparece um retângulo branco deslizando.
 
 ## Como a cor entra
@@ -68,9 +70,7 @@ Três papéis, e cada cor só faz o seu. Manter essa divisão ao adicionar compo
 
 **Ouro** é **valor**: botão de CTA, selo da modalidade sobre a foto, estrela do divisor, rótulos de seção e títulos do rodapé. Em fundo claro sempre `--gold-cta` (5:1); em fundo escuro sempre `--gold` (9,47:1).
 
-Duas exceções deliberadas ao azul, para o metal aparecer onde a marca pede:
-- **Links do rodapé** vão de `--bronze` (5,60:1 sobre `--graphite-950`), com `--bronze-light` no hover. É o terceiro metal da rampa, que só apareceria em gradiente.
-- **Números do hero** vão de `--silver` (12,07:1). Prata cromada combina com o pedestal do troféu ao lado.
+Uma exceção deliberada ao azul, para o metal aparecer onde a marca pede: os **links do rodapé** vão de `--bronze` (5,60:1 sobre `--graphite-950`), com `--bronze-light` no hover. É o terceiro metal da rampa, que só apareceria em gradiente.
 
 O miolo claro não é branco puro: catálogo, "Como Funciona" e orçamento levam lavagens radiais bem fracas (`--wash-gold`, `--wash-bronze`, `--wash-sport`) sobre a base branca. É o que tira o ar de página morta sem virar site colorido.
 
