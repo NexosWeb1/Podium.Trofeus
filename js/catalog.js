@@ -5,8 +5,7 @@
    (4 por fileira, 2 fileiras) e carrossel arrastável no celular.
    ============================================================ */
 
-import { CATEGORIES } from '../data/categories.js';
-import { listProducts } from './store.js';
+import { listProducts, listCategories } from './store.js';
 import { openProductModal } from './product-modal.js';
 
 /** Só carrega a imagem quando é URL real (evita 404 em produto sem foto). */
@@ -29,6 +28,8 @@ function placeholder(label) {
   return `data:image/svg+xml,${encodeURIComponent(svg)}`;
 }
 
+let CATEGORIES = [];
+
 function categoryLabel(id) {
   return CATEGORIES.find((c) => c.id === id)?.label ?? id;
 }
@@ -48,7 +49,7 @@ export async function initCatalog({ onQuote, onRender, scrollTo, pause, resume }
 
   let products = [];
   try {
-    products = await listProducts();
+    [products, CATEGORIES] = await Promise.all([listProducts(), listCategories()]);
   } catch (e) {
     console.error('Falha ao carregar catálogo:', e);
     products = [];

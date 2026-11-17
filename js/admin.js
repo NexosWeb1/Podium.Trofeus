@@ -1,14 +1,16 @@
 /* ============================================================
    admin.js: painel de manutenção do catálogo de troféus.
-   Login, listar, adicionar, editar, excluir, filtrar, upload, preço.
+   Login, listar, adicionar, editar, excluir, filtrar, upload e
+   cadastro de modalidades.
    Usa o mesmo store do site (Supabase quando configurado; senão local).
    ============================================================ */
 
-import { CATEGORIES } from '../data/categories.js';
 import { COLOR_PRESETS } from '../data/colors.js';
 import {
   IS_CLOUD,
   listProducts,
+  listCategories,
+  addCategory,
   addProduct,
   updateProduct,
   deleteProduct,
@@ -20,6 +22,7 @@ import {
 import { compressImage } from './image.js';
 
 const $ = (id) => document.getElementById(id);
+let CATEGORIES = []; // [{ id, label }], na ordem de exibição
 const catLabel = (id) => CATEGORIES.find((c) => c.id === id)?.label ?? id;
 
 /** Modalidades além da principal, para o selo do card do painel. */
@@ -88,7 +91,7 @@ function renderColors() {
 
 /**
  * Modalidades que o troféu atende, só em caixas de seleção.
- * A PRIMEIRA marcada, na ordem de data/categories.js, é a principal:
+ * A PRIMEIRA marcada, na ordem da lista de modalidades, é a principal:
  * é ela que vira o selo sobre a foto e a coluna `categoria` do banco.
  */
 function renderModalidades() {
@@ -114,7 +117,7 @@ function renderModalidades() {
   });
 }
 
-/** Principal = a primeira marcada na ordem de data/categories.js. */
+/** Principal = a primeira marcada na ordem da lista de modalidades. */
 function modalidadesEscolhidas() {
   return CATEGORIES.map((c) => c.id).filter((id) => selectedCategories.includes(id));
 }
@@ -140,8 +143,18 @@ async function showApp() {
   $('admin-login').hidden = true;
   $('admin-app').hidden = false;
 
-  fillCategorySelects();
+  await loadCategories();
   await reload();
+}
+
+async function loadCategories() {
+  try {
+    CATEGORIES = await listCategories();
+  } catch (e) {
+    CATEGORIES = [];
+    toast('Erro ao carregar as modalidades.', true);
+  }
+  fillCategorySelects();
 }
 
 $('login-form').addEventListener('submit', async (e) => {
@@ -172,6 +185,9 @@ function fillCategorySelects() {
   const filter = $('admin-filter');
   filter.length = 1; // mantém "Todas as modalidades"
   CATEGORIES.forEach((c) => filter.appendChild(new Option(c.label, c.id)));
+  // Recarregar a lista não pode zerar o filtro que a pessoa escolheu.
+  filter.value = CATEGORIES.some((c) => c.id === activeFilter) ? activeFilter : 'todos';
+  activeFilter = filter.value;
 }
 
 $('admin-filter').addEventListener('change', (e) => {
@@ -211,7 +227,7 @@ function renderGrid() {
     card.innerHTML = `
       <div class="admin-card__media">${img}${p.featured ? '<span class="admin-card__star">Destaque</span>' : ''}</div>
       <div class="admin-card__body">
-        <span class="admin-card__cat" title="${extrasLabel(p)}">${catLabel(p.category)}${extrasSufixo(p)}</span>
+        <span class="admin-card__cat"></span>
         <h3 class="admin-card__name"></h3>
         <p class="admin-card__desc"></p>
       </div>
@@ -219,6 +235,10 @@ function renderGrid() {
         <button type="button" class="btn btn--outline admin-card__edit">Editar</button>
         <button type="button" class="btn btn--ghost admin-card__del">Excluir</button>
       </div>`;
+    // O rótulo da modalidade vem do painel: entra como texto, nunca como HTML.
+    const cat = card.querySelector('.admin-card__cat');
+    cat.textContent = catLabel(p.category) + extrasSufixo(p);
+    if (extras(p).length) cat.title = extrasLabel(p);
     card.querySelector('.admin-card__name').textContent = p.name;
     card.querySelector('.admin-card__desc').textContent = p.description || '';
     card.querySelector('.admin-card__edit').addEventListener('click', () => openForm(p));
@@ -351,6 +371,50 @@ $('product-form').addEventListener('submit', async (e) => {
   }
 });
 
+/* ---------------- Nova modalidade ---------------- */
+function renderCategoryList() {
+  $('cf-list').replaceChildren(
+    ...CATEGORIES.map((c) => {
+      const li = document.createElement('li');
+      li.textContent = c.label;
+      return li;
+    })
+  );
+}
+
+function openCategoryForm() {
+  $('cf-name').value = '';
+  $('cf-error').hidden = true;
+  renderCategoryList();
+  openModal('category-modal');
+  setTimeout(() => $('cf-name').focus(), 60);
+}
+
+$('add-cat-btn').addEventListener('click', openCategoryForm);
+$('cf-name').addEventListener('input', () => ($('cf-error').hidden = true));
+
+$('category-form').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const err = $('cf-error');
+  err.hidden = true;
+
+  const btn = $('cf-save');
+  btn.disabled = true;
+  btn.textContent = 'Salvando';
+  try {
+    const nova = await addCategory($('cf-name').value);
+    await loadCategories();
+    closeModal('category-modal');
+    toast(`Modalidade "${nova.label}" criada.`);
+  } catch (ex) {
+    err.textContent = ex.message || 'Erro ao criar a modalidade.';
+    err.hidden = false;
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Criar modalidade';
+  }
+});
+
 /* ---------------- Exclusão ---------------- */
 function askDelete(product) {
   deleteId = product.id;
@@ -393,11 +457,13 @@ function closeModal(id) {
 document.addEventListener('click', (e) => {
   if (e.target.closest('[data-close]')) closeModal('product-form-modal');
   if (e.target.closest('[data-close-del]')) closeModal('delete-modal');
+  if (e.target.closest('[data-close-cat]')) closeModal('category-modal');
 });
 document.addEventListener('keydown', (e) => {
   if (e.key === 'Escape') {
     closeModal('product-form-modal');
     closeModal('delete-modal');
+    closeModal('category-modal');
   }
 });
 

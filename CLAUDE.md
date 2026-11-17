@@ -33,7 +33,7 @@ Empresa irmã da **Podium Brindes** (`../Podium Brindes/`), de onde vem a arquit
 - **Cores e tema:** só em `css/tokens.css`. Nunca hardcode hex em componente.
 - **Rampa da prata:** `--silver` só em fundo escuro, `--silver-deep` só em não-texto, `--silver-ink` é o papel prata em fundo claro. O bloco de comentário no topo do `tokens.css` explica e traz as razões de contraste medidas.
 - **`--grad-metal` é cromo**, não ouro. O CTA usa `--grad-gold-cta`, cuja faixa de luminância é estreita para o texto `--gold-ink` passar AA em todos os stops.
-- **Catálogo:** nova modalidade é um objeto em `data/categories.js`. Produto se cadastra pelo painel, nunca editando HTML.
+- **Catálogo:** modalidade e produto se cadastram pelo painel, nunca editando HTML. As modalidades moram na tabela `modalidades` (nuvem) ou no `localStorage` (local), e todo mundo lê por `listCategories()` do `store.js`. `data/categories.js` é só a semente e a reserva caso a leitura falhe.
 - **Contato:** WhatsApp, telefone, e-mail, Instagram, endereço e horário só em `js/config.js`.
 - **Sem preço:** o catálogo não mostra valor em lugar nenhum. A coluna `preco` e o mapeamento do store continuam de pé; o `js/price.js` está parado, sem importador. Se voltar a ter preço, o input do painel tem de ser `type="text"`, nunca `number`: o `number` engole vírgula decimal em pt-BR e devolve string vazia sem avisar.
 - **Scroll:** toda âncora usa `lenis.scrollTo`, nunca `scrollIntoView`.
@@ -48,7 +48,8 @@ Empresa irmã da **Podium Brindes** (`../Podium Brindes/`), de onde vem a arquit
 - `toRow()` em `js/store.js` omite chaves `undefined`. Sem isso, um `updateProduct(id, { featured: true })` apagaria nome, categoria e a lista de modalidades.
 - `lsWrite()` tem guarda de quota: no modo local as fotos são dataURL base64 na mesma chave, e o teto de ~5 MB chega rápido.
 - O marquee repete a lista até ter 12 itens antes de duplicar. Com meia dúzia de modalidades, a metade não preenchia telas largas e aparecia um vão.
-- **Acrescentar modalidade mexe em dois lugares:** o objeto em `data/categories.js` e os dois `check` de `supabase/schema.sql`, que precisam ser re-rodados no SQL Editor. Só o primeiro e o cadastro é recusado pelo banco com "violates check constraint". A contagem nos testes deriva da lista, então essa não precisa de ajuste.
+- **Modalidade não tem mais lista fixa no banco.** Quem valida `categoria` e `categorias` é o gatilho `produtos_normaliza_categorias`, contra a tabela `modalidades`; `check` não consulta outra tabela e FK não olha dentro de array. Não reintroduzir o `check (categoria in (...))`: ele recusaria toda modalidade criada pelo painel.
+- **Rótulo de modalidade é texto do usuário.** Vai para a tela por `textContent` ou `new Option`, nunca interpolado em `innerHTML` (selo do card do painel, faixa do topo).
 - **Um troféu tem uma modalidade principal e uma lista.** `categoria` é a principal, e é ela que vira o selo sobre a foto. `categorias` é a lista completa, e é ela que todo filtro usa (catálogo, formulário e painel). A principal está sempre dentro da lista: o banco garante por gatilho, o `store.js` garante por `normalizeCategories`, e há uma trava conferindo. Filtrar por `categoria` esconderia um troféu de beach tennis que também serve futevôlei.
 - `.admin-card__media img` usa `contain`, não `cover`: troféu é alto e estreito e o `cover` cortava a taça.
 - **`.about` e `.hero` são escuros por regra própria, sem a classe `.section--dark`.** Toda regra de contexto escuro precisa listar os três, senão um token de fundo claro (`--accent`, `--gold-cta`) vaza para cima do grafite e reprova contraste. Já aconteceu com `.eyebrow` e com `.link-arrow`.

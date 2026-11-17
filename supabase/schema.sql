@@ -10,6 +10,43 @@
 
 
 -- ------------------------------------------------------------
+-- 0. Tabela de modalidades
+-- ------------------------------------------------------------
+-- As modalidades são cadastradas pelo painel ("Nova modalidade").
+-- `id` é o slug ASCII que vai para produtos.categoria; `rotulo` é o nome
+-- com acento, mostrado no site. A lista de data/categories.js entra aqui
+-- como semente e continua no front só como reserva.
+create table if not exists public.modalidades (
+  id         text        primary key,
+  rotulo     text        not null,
+  ordem      integer     not null default 0,
+  criado_em  timestamptz not null default now()
+);
+
+alter table public.modalidades drop constraint if exists modalidades_id_slug;
+alter table public.modalidades add constraint modalidades_id_slug
+  check (id ~ '^[a-z0-9]+(-[a-z0-9]+)*$' and id not in ('todos', 'outro'));
+
+alter table public.modalidades drop constraint if exists modalidades_rotulo_preenchido;
+alter table public.modalidades add constraint modalidades_rotulo_preenchido
+  check (length(btrim(rotulo)) between 1 and 40);
+
+-- Semente. `do nothing` preserva rótulo e ordem que já foram mexidos.
+insert into public.modalidades (id, rotulo, ordem) values
+  ('futebol',      'Futebol',      1),
+  ('futevolei',    'Futevôlei',    2),
+  ('beach-tennis', 'Beach Tennis', 3),
+  ('volei',        'Vôlei',        4),
+  ('pescaria',     'Pescaria',     5),
+  ('truco',        'Truco',        6),
+  ('empresarial',  'Empresarial',  7)
+on conflict (id) do nothing;
+
+comment on table public.modalidades is
+  'Modalidades do catálogo. Cadastradas pelo painel; a semente vem de data/categories.js.';
+
+
+-- ------------------------------------------------------------
 -- 1. Tabela de produtos
 -- ------------------------------------------------------------
 -- Os nomes das colunas são em português porque o js/store.js faz o
@@ -44,10 +81,17 @@ alter table public.produtos alter column categorias set default '{}';
 -- Gatilho que normaliza a lista: garante a principal dentro dela, remove
 -- repetidas e preserva a ordem. Assim um insert que mande só `categoria`
 -- (pela Table Editor, por exemplo) não esbarra na trava mais abaixo.
+--
+-- Ele também confere cada modalidade contra a tabela `modalidades`. Isso
+-- não cabe num `check` (check não consulta outra tabela) nem numa FK
+-- (FK não olha dentro de array). Sem a conferência, um erro de digitação
+-- cria um produto que nenhum filtro acha.
 create or replace function public.produtos_normaliza_categorias()
 returns trigger
 language plpgsql
 as $$
+declare
+  invalidas text[];
 begin
   new.categorias := (
     select array_agg(c order by ordem)
@@ -59,6 +103,18 @@ begin
          group by c
       ) distintas
   );
+
+  select array_agg(c)
+    into invalidas
+    from unnest(new.categorias) as c
+   where not exists (select 1 from public.modalidades m where m.id = c);
+
+  if invalidas is not null then
+    raise exception 'Modalidade inexistente: %', array_to_string(invalidas, ', ')
+      using errcode = 'check_violation',
+            hint = 'Cadastre a modalidade pelo painel antes de usá-la.';
+  end if;
+
   return new;
 end;
 $$;
@@ -78,7 +134,7 @@ alter table public.produtos add column if not exists specs jsonb;
 
 comment on table  public.produtos is 'Catálogo de troféus do site.';
 comment on column public.produtos.categoria is
-  'Slug da modalidade, igual ao id em data/categories.js: futebol, futevolei, beach-tennis, volei, pescaria, empresarial.';
+  'Slug da modalidade principal, igual a um id de public.modalidades.';
 comment on column public.produtos.preco is
   'Nulo faz o site mostrar "Sob consulta".';
 
@@ -86,29 +142,16 @@ comment on column public.produtos.preco is
 -- ------------------------------------------------------------
 -- 2. Integridade
 -- ------------------------------------------------------------
--- A modalidade precisa casar com data/categories.js. Sem esta trava, um
--- erro de digitação no cadastro cria um produto que nenhum filtro acha.
--- Ao acrescentar uma modalidade em data/categories.js, acrescente aqui e
--- RODE ESTE ARQUIVO DE NOVO. Sem isso o cadastro da modalidade nova é
--- recusado pelo banco com "violates check constraint".
+-- Que cada modalidade existe quem confere é o gatilho acima, contra a
+-- tabela `modalidades`. A lista fixa que morava aqui saiu: com ela, toda
+-- modalidade criada pelo painel seria recusada com "violates check constraint".
 alter table public.produtos drop constraint if exists produtos_categoria_valida;
-alter table public.produtos add constraint produtos_categoria_valida
-  check (categoria in (
-    'futebol', 'futevolei', 'beach-tennis', 'volei', 'pescaria', 'truco', 'empresarial'
-  ));
 
--- Toda modalidade da lista precisa ser válida, e a principal precisa estar
--- dentro dela. Sem a segunda parte, um troféu poderia sumir do filtro da
--- própria modalidade que mostra no selo.
+-- A principal precisa estar dentro da lista. Sem isso, um troféu poderia
+-- sumir do filtro da própria modalidade que mostra no selo.
 alter table public.produtos drop constraint if exists produtos_categorias_validas;
 alter table public.produtos add constraint produtos_categorias_validas
-  check (
-    categorias is not null
-    and categorias <@ array[
-      'futebol', 'futevolei', 'beach-tennis', 'volei', 'pescaria', 'truco', 'empresarial'
-    ]::text[]
-    and categoria = any(categorias)
-  );
+  check (categorias is not null and categoria = any(categorias));
 
 alter table public.produtos drop constraint if exists produtos_nome_preenchido;
 alter table public.produtos add constraint produtos_nome_preenchido
@@ -164,6 +207,20 @@ create policy "produtos_delete_auth" on public.produtos
   for delete to authenticated
   using (true);
 
+-- Modalidades: o site lê, o painel cria. Não há update nem delete pelo
+-- painel: apagar uma modalidade em uso deixaria troféus órfãos.
+alter table public.modalidades enable row level security;
+
+drop policy if exists "modalidades_select_public" on public.modalidades;
+create policy "modalidades_select_public" on public.modalidades
+  for select to anon, authenticated
+  using (true);
+
+drop policy if exists "modalidades_insert_auth" on public.modalidades;
+create policy "modalidades_insert_auth" on public.modalidades
+  for insert to authenticated
+  with check (true);
+
 
 -- ------------------------------------------------------------
 -- 4b. Privilégios da Data API
@@ -180,6 +237,9 @@ grant usage on schema public to anon, authenticated;
 
 grant select on public.produtos to anon, authenticated;
 grant insert, update, delete on public.produtos to authenticated;
+
+grant select on public.modalidades to anon, authenticated;
+grant insert on public.modalidades to authenticated;
 
 
 -- ------------------------------------------------------------
@@ -236,11 +296,18 @@ select
     where tgrelid = 'public.produtos'::regclass
       and tgname = 'produtos_normaliza_categorias_trg')                    as gatilho,
   (select count(*) from public.produtos
-    where categorias is null or not (categoria = any(categorias)))         as linhas_inconsistentes;
+    where categorias is null or not (categoria = any(categorias)))         as linhas_inconsistentes,
+  (select count(*) from public.modalidades)                               as modalidades,
+  (select count(*) from pg_policies
+    where schemaname = 'public' and tablename = 'modalidades')            as policies_modalidades,
+  (select count(*) from public.produtos p
+    where exists (select 1 from unnest(p.categorias) c
+                   where c not in (select id from public.modalidades)))   as produtos_sem_modalidade;
 -- Esperado: colunas=11, rls_ligado=true, policies_tabela=4,
 --           policies_storage=4, bucket_publico=true,
 --           anon_le=1, auth_escreve=3, gatilho=1,
---           linhas_inconsistentes=0
+--           linhas_inconsistentes=0, modalidades>=7,
+--           policies_modalidades=2, produtos_sem_modalidade=0
 
 
 -- ============================================================

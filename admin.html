@@ -79,6 +79,19 @@
             <select class="admin-filter" id="admin-filter" aria-label="Filtrar por modalidade">
               <option value="todos">Todas as modalidades</option>
             </select>
+            <button class="btn btn--outline" id="add-cat-btn" type="button">
+              <svg
+                viewBox="0 0 24 24"
+                width="18"
+                height="18"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <path d="M12 5v14M5 12h14" stroke-linecap="round" />
+              </svg>
+              Nova modalidade
+            </button>
             <button class="btn btn--gold" id="add-btn" type="button">
               <svg
                 viewBox="0 0 24 24"
@@ -201,6 +214,56 @@
         <div class="admin-modal__foot">
           <button type="button" class="btn btn--outline" data-close>Cancelar</button>
           <button type="submit" class="btn btn--gold" id="pf-save">Salvar troféu</button>
+        </div>
+      </form>
+    </div>
+
+    <!-- ===== Nova modalidade ===== -->
+    <div class="admin-modal admin-modal--sm" id="category-modal" aria-hidden="true">
+      <div class="admin-modal__backdrop" data-close-cat></div>
+      <form
+        class="admin-modal__card"
+        id="category-form"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="cf-title"
+      >
+        <button class="admin-modal__close" type="button" aria-label="Fechar" data-close-cat>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M6 6l12 12M18 6L6 18" stroke-linecap="round" />
+          </svg>
+        </button>
+        <h2 id="cf-title">Nova modalidade</h2>
+
+        <div class="field">
+          <label class="field__label" for="cf-name">
+            Nome da modalidade <span class="field__req">*</span>
+          </label>
+          <input
+            id="cf-name"
+            name="nome"
+            type="text"
+            maxlength="40"
+            autocomplete="off"
+            placeholder="Ex.: Basquete"
+            required
+          />
+          <p class="admin-hint">
+            Aparece no filtro do catálogo, no formulário de orçamento e nas caixas de
+            modalidade dos troféus.
+          </p>
+        </div>
+
+        <div class="field">
+          <span class="field__label">Já cadastradas</span>
+          <ul class="admin-cat-list" id="cf-list"></ul>
+        </div>
+
+        <p class="admin-modal__error" id="cf-error" role="alert" hidden></p>
+
+        <div class="admin-modal__foot">
+          <button type="button" class="btn btn--outline" data-close-cat>Cancelar</button>
+          <button type="submit" class="btn btn--gold" id="cf-save">Criar modalidade</button>
         </div>
       </form>
     </div>

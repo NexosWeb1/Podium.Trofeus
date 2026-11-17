@@ -1,8 +1,9 @@
 /* ============================================================
-   categories.js: modalidades esportivas (ordem do escopo).
+   categories.js: modalidades de partida (ordem do escopo).
 
-   Adicionar uma modalidade = 1 objeto aqui. O chip do filtro, o
-   select do formulário e o filtro do painel se atualizam sozinhos.
+   Modalidade nova se cria pelo painel, botão "Nova modalidade". Esta
+   lista é a semente da tabela `modalidades` (ver supabase/schema.sql)
+   e a reserva que o store.js usa se a leitura do banco falhar.
 
    Os `id` são slug ASCII de propósito: eles vão para a coluna
    `categoria` do Supabase e para `product.category`. Acento em chave

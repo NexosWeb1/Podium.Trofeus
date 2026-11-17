@@ -160,8 +160,6 @@
         IMAGE_BUCKET,
         isSupabaseConfigured,
       } from '../js/supabase-config.js';
-      // Mesma fonte que o site usa, para as duas listas não divergirem.
-      import { CATEGORIES } from '../data/categories.js';
 
       const lista = document.getElementById('lista');
       const resumo = document.getElementById('resumo');
@@ -171,7 +169,6 @@
         'id', 'nome', 'categoria', 'descricao', 'preco',
         'imagem_url', 'destaque', 'cores', 'specs', 'criado_em',
       ];
-      const MODALIDADES = CATEGORIES.map((c) => c.id);
 
       let contagem = { ok: 0, erro: 0, alerta: 0 };
 
@@ -337,10 +334,22 @@
           });
 
           // ---- 6. Modalidades ----
-          await etapa('Modalidades gravadas batem com data/categories.js', async () => {
-            const { data, error } = await anon.from('produtos').select('categoria');
+          await etapa('Modalidades gravadas existem na tabela modalidades', async () => {
+            const { data: mods, error: modErr } = await anon.from('modalidades').select('id');
+            if (modErr) {
+              return {
+                estado: 'erro',
+                detalhe: modErr.message,
+                dica:
+                  'A tabela <code>modalidades</code> não existe ou não tem GRANT para <code>anon</code>. ' +
+                  'Rode o <code>supabase/schema.sql</code> de novo. Enquanto isso o site usa a lista ' +
+                  'de <code>data/categories.js</code> e o painel não consegue criar modalidade.',
+              };
+            }
+            const MODALIDADES = (mods || []).map((m) => m.id);
+            const { data, error } = await anon.from('produtos').select('categorias');
             if (error) throw error;
-            const usadas = [...new Set((data || []).map((r) => r.categoria))];
+            const usadas = [...new Set((data || []).flatMap((r) => r.categorias || []))];
             const invalidas = usadas.filter((c) => !MODALIDADES.includes(c));
             if (invalidas.length) {
               return {
@@ -349,7 +358,7 @@
                 dica:
                   'Os valores válidos são ' +
                   MODALIDADES.map((m) => `<code>${m}</code>`).join(', ') +
-                  '. Corrija as linhas ou ajuste <code>data/categories.js</code>.',
+                  '. Corrija as linhas ou cadastre a modalidade pelo painel.',
               };
             }
             return {

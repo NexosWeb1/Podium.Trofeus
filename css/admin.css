@@ -402,6 +402,26 @@ body.admin {
   opacity: 0.75;
 }
 
+/* ---------- Lista de modalidades (modal de nova modalidade) ---------- */
+.admin-cat-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-2);
+  max-height: 9.5rem;
+  overflow-y: auto;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.admin-cat-list li {
+  padding: 0.3rem 0.7rem;
+  font-size: var(--fs-sm);
+  color: var(--text-muted);
+  border: 1px solid var(--border);
+  border-radius: var(--r-full);
+}
+
 /* ---------- Seletor de cores ---------- */
 .color-selected {
   display: flex;

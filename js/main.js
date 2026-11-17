@@ -3,19 +3,19 @@
    ============================================================ */
 
 import { CONFIG, waLink } from './config.js';
-import { CATEGORIES } from '../data/categories.js';
+import { listCategories } from './store.js';
 import { initSmoothScroll } from './smooth-scroll.js';
 import { initNav } from './nav.js';
 import { initCatalog } from './catalog.js';
 import { initForm } from './form.js';
 import { initAnimations } from './animations.js';
 
-function buildMarquee() {
+function buildMarquee(categories) {
   const track = document.getElementById('marquee-track');
   if (!track) return;
 
   const base = [
-    ...CATEGORIES.map((c) => c.label),
+    ...categories.map((c) => c.label),
     'Projetos exclusivos',
     'Produção própria',
     'Alto padrão de acabamento',
@@ -27,9 +27,15 @@ function buildMarquee() {
   const labels = [];
   while (labels.length < 12) labels.push(...base);
 
-  track.innerHTML = [...labels, ...labels]
-    .map((l) => `<span class="marquee__item">${l}</span>`)
-    .join('');
+  // textContent, e não innerHTML: o rótulo agora vem do painel.
+  track.replaceChildren(
+    ...[...labels, ...labels].map((l) => {
+      const span = document.createElement('span');
+      span.className = 'marquee__item';
+      span.textContent = l;
+      return span;
+    })
+  );
 }
 
 function hydrateContactLinks() {
@@ -98,7 +104,10 @@ function hydrateContactLinks() {
 
 async function main() {
   hydrateContactLinks();
-  buildMarquee();
+  // Sem await: a faixa não segura o resto da página esperando o banco.
+  listCategories()
+    .then(buildMarquee)
+    .catch((e) => console.error('Falha ao carregar as modalidades da faixa:', e));
 
   const scroll = initSmoothScroll();
   const anim = initAnimations();

@@ -3,11 +3,11 @@
    Selects dependentes: "Modelo do Troféu" filtrado pela modalidade.
    ============================================================ */
 
-import { CATEGORIES } from '../data/categories.js';
-import { listProducts } from './store.js';
+import { listProducts, listCategories } from './store.js';
 import { CONFIG, waLink } from './config.js';
 
 let PRODUCTS = [];
+let CATEGORIES = [];
 
 /** Gancho para integração futura (analytics ou backend). No-op por padrão. */
 export function onQuoteSubmitted(payload) {
@@ -90,6 +90,12 @@ export async function initForm() {
   } catch (e) {
     console.error('Falha ao carregar os modelos para o formulário:', e);
     PRODUCTS = [];
+  }
+  try {
+    CATEGORIES = await listCategories();
+  } catch (e) {
+    console.error('Falha ao carregar as modalidades para o formulário:', e);
+    CATEGORIES = [];
   }
 
   const modalidadeSelect = form.elements.modalidade;

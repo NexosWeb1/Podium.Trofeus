@@ -3,7 +3,8 @@
    Dois back-ends com a MESMA API:
      - Supabase (nuvem) quando supabase-config.js está preenchido.
      - localStorage (navegador) como fallback, para uso/teste local.
-   O resto do app (catálogo, modal, form, admin) só fala com este módulo.
+   O resto do app (catálogo, modal, form, admin) só fala com este módulo,
+   inclusive para ler e criar modalidades (listCategories, addCategory).
    Produto (shape usado no app):
      { id, category, categories, name, description, price, image,
        featured, specs, colors, hasImage }
@@ -14,6 +15,7 @@
    ============================================================ */
 
 import { PRODUCTS as SEED } from '../data/products.js';
+import { CATEGORIES as BASE_CATEGORIES } from '../data/categories.js';
 import {
   SUPABASE_URL,
   SUPABASE_ANON_KEY,
@@ -22,6 +24,7 @@ import {
 } from './supabase-config.js';
 
 const LS_KEY = 'podium_trofeus_catalog_v1';
+const LS_CAT_KEY = 'podium_trofeus_modalidades_v1';
 const useCloud = isSupabaseConfigured();
 
 /* ---------------- Supabase (lazy) ---------------- */
@@ -257,6 +260,107 @@ export async function uploadImage(fileOrDataUrl, filenameHint = 'produto') {
   }
   // Local: a dataURL já é a "URL".
   return typeof fileOrDataUrl === 'string' ? fileOrDataUrl : await blobToDataUrl(fileOrDataUrl);
+}
+
+/* ---------------- Modalidades ---------------- */
+
+/**
+ * As modalidades moram na tabela `modalidades` (nuvem) ou numa chave do
+ * localStorage (local). `data/categories.js` é a lista de partida: semeia
+ * a tabela pelo schema.sql e serve de reserva se a leitura falhar, para o
+ * site nunca ficar sem filtro.
+ *
+ * A promessa fica em cache: catálogo, formulário e faixa do topo pedem a
+ * lista ao mesmo tempo e uma ida ao banco basta. addCategory() limpa o cache.
+ */
+let _catsPromise = null;
+
+/** Ids que já têm outro significado na interface. */
+const RESERVED_IDS = ['todos', 'outro'];
+
+function lsReadCats() {
+  try {
+    const arr = JSON.parse(localStorage.getItem(LS_CAT_KEY) || '[]');
+    return Array.isArray(arr) ? arr.filter((c) => c && c.id && c.label) : [];
+  } catch (e) {
+    return [];
+  }
+}
+
+async function fetchCategories() {
+  if (useCloud) {
+    try {
+      const c = await sb();
+      const { data, error } = await c
+        .from('modalidades')
+        .select('id, rotulo')
+        .order('ordem', { ascending: true })
+        .order('criado_em', { ascending: true });
+      if (error) throw error;
+      if (data && data.length) return data.map((r) => ({ id: r.id, label: r.rotulo }));
+    } catch (e) {
+      console.warn('Não foi possível ler as modalidades do banco; usando a lista padrão.', e);
+    }
+    return BASE_CATEGORIES.map((c) => ({ ...c }));
+  }
+  const base = BASE_CATEGORIES.map((c) => ({ ...c }));
+  const extras = lsReadCats().filter((x) => !base.some((b) => b.id === x.id));
+  return [...base, ...extras];
+}
+
+/** Lista as modalidades na ordem de exibição: [{ id, label }]. */
+export function listCategories() {
+  if (!_catsPromise) {
+    _catsPromise = fetchCategories().catch((e) => {
+      _catsPromise = null;
+      throw e;
+    });
+  }
+  return _catsPromise.then((list) => list.map((c) => ({ ...c })));
+}
+
+/**
+ * Cria uma modalidade a partir do nome digitado no painel.
+ * O id é o slug ASCII do nome (ver o comentário em data/categories.js).
+ */
+export async function addCategory(label) {
+  const nome = String(label || '').trim().replace(/\s+/g, ' ');
+  if (!nome) throw new Error('Informe o nome da modalidade.');
+  if (nome.length > 40) throw new Error('Use no máximo 40 caracteres.');
+
+  const id = slugify(nome);
+  if (!id) throw new Error('O nome precisa ter ao menos uma letra ou número.');
+  if (RESERVED_IDS.includes(id)) throw new Error(`"${nome}" é um nome reservado.`);
+
+  const atuais = await listCategories();
+  const repetida = atuais.find(
+    (c) => c.id === id || c.label.toLowerCase() === nome.toLowerCase()
+  );
+  if (repetida) throw new Error(`A modalidade "${repetida.label}" já existe.`);
+
+  if (useCloud) {
+    const c = await sb();
+    const { error } = await c
+      .from('modalidades')
+      .insert({ id, rotulo: nome, ordem: atuais.length + 1 });
+    if (error) {
+      if (error.code === '23505') throw new Error('Essa modalidade já existe.');
+      if (error.code === '42P01' || error.code === 'PGRST205') {
+        throw new Error(
+          'A tabela de modalidades ainda não existe no banco. ' +
+            'Rode o supabase/schema.sql de novo no SQL Editor.'
+        );
+      }
+      throw error;
+    }
+  } else {
+    const extras = lsReadCats();
+    extras.push({ id, label: nome });
+    localStorage.setItem(LS_CAT_KEY, JSON.stringify(extras));
+  }
+
+  _catsPromise = null;
+  return { id, label: nome };
 }
 
 /* ---------------- Autenticação (admin) ---------------- */

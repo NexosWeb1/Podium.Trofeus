@@ -35,7 +35,7 @@ A ordem dos `<link>` de CSS importa: `tokens` define as variáveis que todos os 
 |---|---|
 | WhatsApp, telefone, e-mail, Instagram, endereço, horário | `js/config.js` |
 | Cores, fontes, espaçamento, sombras | `css/tokens.css` |
-| Modalidades esportivas | `data/categories.js` |
+| Modalidades esportivas | pelo painel, botão "Nova modalidade" (a lista inicial está em `data/categories.js`) |
 | Acabamentos oferecidos no painel | `data/colors.js` |
 | Troféus do catálogo | pelo painel, em `admin.html` |
 | Credenciais do Supabase | `js/supabase-config.js` |
@@ -64,7 +64,8 @@ Todo o esquema mora em [`supabase/schema.sql`](supabase/schema.sql), num arquivo
 No painel do Supabase, abra **SQL Editor**, cole o conteúdo de `supabase/schema.sql` e execute. Ele cria:
 
 - a tabela `produtos`, com `preco numeric(10,2)` e `specs jsonb`;
-- travas de integridade, entre elas um `check` que só aceita as modalidades de `data/categories.js` (sem isso, um erro de digitação cria um produto que nenhum filtro acha);
+- a tabela `modalidades`, semeada com a lista de `data/categories.js`, onde o painel grava as modalidades novas;
+- travas de integridade, entre elas um gatilho que só aceita modalidades que existem na tabela `modalidades` (sem isso, um erro de digitação cria um produto que nenhum filtro acha);
 - os índices que o `listProducts()` usa para ordenar;
 - o RLS com leitura pública e escrita só para quem tem login;
 - o bucket `produtos` no Storage, público para leitura.
@@ -90,7 +91,7 @@ Abra [`supabase/diagnostico.html`](supabase/diagnostico.html) no navegador. Ela 
 - credenciais preenchidas e no formato certo, e um aviso se a chave colada for a `service_role`;
 - leitura pública da tabela e presença das dez colunas;
 - **se um visitante sem login consegue escrever**, que é o teste mais importante: se passar, o RLS está aberto e qualquer pessoa pode alterar o catálogo;
-- modalidades gravadas batendo com `data/categories.js`;
+- modalidades gravadas batendo com a tabela `modalidades`;
 - bucket existindo, público, e as fotos já cadastradas respondendo;
 - com e-mail e senha do painel: login, cadastro, edição parcial, exclusão e upload, limpando tudo que criou.
 
